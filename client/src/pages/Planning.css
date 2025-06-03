@@ -14,8 +14,8 @@
   border-radius: 0;
   box-shadow: none;
   overflow: visible;
-  flex-shrink: 0; /* Prevent heatmap from shrinking */
-  padding: var(--spacing-xl);
+  flex-shrink: 0; 
+  padding: 2.5em 3em 1em 3em;
 }
 
 /* TaskLists section - lower part, scrollable */
@@ -25,7 +25,7 @@
   display: flex;
   flex-direction: column;
   min-height: 0; /* Allow section to shrink */
-  padding: 0 var(--spacing-xl) var(--spacing-xl) var(--spacing-xl);
+  padding: 1em 3em 3em 3em;
 }
 
 /* Responsive adjustments */
