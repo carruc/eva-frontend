@@ -77,14 +77,35 @@ function App() {
       const visibleProjects = projects.filter(p => !p.hidden);
       const shouldHideNewProject = visibleProjects.length >= 6;
       
+      // Separate deadline data from project data
+      const { deadline, ...pureProjectData } = projectData;
+      
       // Create project data with hidden flag if limit is reached
       const newProjectData = {
-        ...projectData,
+        ...pureProjectData,
         hidden: shouldHideNewProject
       };
       
       const newProject = await apiService.createProject(newProjectData);
       setProjects(prev => [...prev, newProject]);
+      
+      // Create deadline event if provided
+      if (deadline) {
+        try {
+          const deadlineEventData = {
+            name: deadline.name,
+            projectId: newProject.id,
+            date: deadline.date,
+            type: 'deadline'
+          };
+          const newDeadline = await apiService.createEvent(deadlineEventData);
+          setEvents(prev => [...prev, newDeadline]);
+        } catch (deadlineErr) {
+          console.error('Error creating deadline:', deadlineErr);
+          setError('Project created but failed to create deadline. You can add a deadline later.');
+        }
+      }
+      
       setShowProjectModal(false);
       setEditingProject(null);
       
@@ -102,8 +123,46 @@ function App() {
 
   const handleUpdateProject = async (projectId, updates) => {
     try {
-      const updatedProject = await apiService.updateProject(projectId, updates);
+      // Separate deadline data from project updates
+      const { deadline, ...pureProjectUpdates } = updates;
+      
+      const updatedProject = await apiService.updateProject(projectId, pureProjectUpdates);
       setProjects(prev => prev.map(p => p.id === projectId ? updatedProject : p));
+      
+      // Handle deadline updates
+      const existingDeadline = events.find(e => e.projectId === projectId && e.type === 'deadline');
+      
+      if (deadline) {
+        const deadlineEventData = {
+          name: deadline.name,
+          projectId: projectId,
+          date: deadline.date,
+          type: 'deadline'
+        };
+        
+        if (existingDeadline) {
+          // Update existing deadline
+          try {
+            const updatedDeadline = await apiService.updateEvent(existingDeadline.id, deadlineEventData);
+            setEvents(prev => prev.map(e => e.id === existingDeadline.id ? updatedDeadline : e));
+          } catch (deadlineErr) {
+            console.error('Error updating deadline:', deadlineErr);
+            setError('Project updated but failed to update deadline.');
+          }
+        } else {
+          // Create new deadline
+          try {
+            const newDeadline = await apiService.createEvent(deadlineEventData);
+            setEvents(prev => [...prev, newDeadline]);
+          } catch (deadlineErr) {
+            console.error('Error creating deadline:', deadlineErr);
+            setError('Project updated but failed to create deadline.');
+          }
+        }
+      } else if (existingDeadline) {
+        // If deadline checkbox was unchecked, we could optionally delete the existing deadline
+        // For now, we'll leave it as is to preserve user data
+      }
       
       if (editingProject) {
         setShowProjectModal(false);
@@ -314,6 +373,10 @@ function App() {
         {showProjectModal && (
           <ProjectModal
             project={editingProject}
+            existingDeadline={editingProject ? 
+              events.find(e => e.projectId === editingProject.id && e.type === 'deadline') : 
+              null
+            }
             onSave={editingProject ? 
               (data) => handleUpdateProject(editingProject.id, data) : 
               handleCreateProject
