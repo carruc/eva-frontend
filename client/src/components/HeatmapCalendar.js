@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { ChevronUp, ChevronDown, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faExpand, faCompress } from '@fortawesome/free-solid-svg-icons';
 import { dataUtils } from '../services/api';
 import EventCard from './EventCard';
 import './HeatmapCalendar.css';
@@ -30,6 +32,7 @@ const HeatmapCalendar = ({
   const [isCustomTimeScale, setIsCustomTimeScale] = useState(false);
   const [showEventCard, setShowEventCard] = useState(false);
   const [eventCardPosition, setEventCardPosition] = useState({ x: 0, y: 0 });
+  const [isCompactView, setIsCompactView] = useState(false);
   const calendarRef = useRef(null);
   const newEventButtonRef = useRef(null);
 
@@ -446,7 +449,7 @@ const HeatmapCalendar = ({
   const monthHeaders = getMonthHeaders();
 
   return (
-    <div className="heatmap-calendar" ref={calendarRef}>
+    <div className={`heatmap-calendar ${isCompactView ? 'compact-view' : ''}`} ref={calendarRef}>
       {/* Header with controls - Implements R15, D1.3 */}
       <div className="heatmap-header">
         <div className="heatmap-controls">
@@ -472,6 +475,17 @@ const HeatmapCalendar = ({
             title="Next week"
           >
             <ChevronRight size={16} />
+          </button>
+
+          <button
+            className={`btn ${isCompactView ? 'btn-primary' : 'btn-ghost'}`}
+            onClick={() => setIsCompactView(!isCompactView)}
+            title={isCompactView ? "Exit compact view" : "Enter compact view"}
+          >
+            <FontAwesomeIcon 
+              icon={isCompactView ? faCompress : faExpand} 
+              size="sm" 
+            />
           </button>
         </div>
 
@@ -588,6 +602,7 @@ const HeatmapCalendar = ({
             onEventEdit={onEventEdit}
             events={dataUtils.getProjectEvents(events, project.id)}
             showEventTitles={showEventTitles}
+            isCompactView={isCompactView}
           />
         ))}
 
@@ -670,7 +685,8 @@ const ProjectRow = ({
   onCellHover,
   onEventEdit,
   events,
-  showEventTitles
+  showEventTitles,
+  isCompactView
 }) => {
 
   return (
@@ -685,11 +701,6 @@ const ProjectRow = ({
           <div className="project-info">
             <div className="project-main-info">
               <span className="project-name" title={project.name}>{project.name}</span>
-              {events.length > 0 && (
-                <span className="project-events-count text-muted">
-                  {events.length} event{events.length !== 1 ? 's' : ''}
-                </span>
-              )}
             </div>
           </div>
 
@@ -778,8 +789,8 @@ const ProjectRow = ({
                 }}
               />
               
-              {/* Event names directly under the heatmap square */}
-              {cellData.events.length > 0 && showEventTitles && (
+              {/* Event names directly under the heatmap square - hidden in compact view */}
+              {cellData.events.length > 0 && showEventTitles && !isCompactView && (
                 <div className="cell-event-names">
                   {cellData.events.map(event => (
                     <div

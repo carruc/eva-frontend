@@ -5,6 +5,102 @@
   overflow: visible;
 }
 
+/* Compact view styles */
+.heatmap-calendar.compact-view .project-row {
+  /* Smaller height for compact rows */
+}
+
+.heatmap-calendar.compact-view .project-header {
+  min-height: 20px; /* Reduced from 40px */
+  padding-left: 0.5em;
+  padding-right: 0em;
+  padding-top: 0;
+  padding-bottom: 0; /* Tighter padding */
+}
+
+.heatmap-calendar.compact-view .project-name {
+  font-size: 0.75rem; /* Smaller font size */
+  font-weight: 500; /* Slightly lighter weight */
+}
+
+.heatmap-calendar.compact-view .heatmap-cell {
+  min-height: 32px; /* Reduced from 48px */
+}
+
+.heatmap-calendar.compact-view .date-header {
+  min-height: 32px; /* Reduced from 48px */
+}
+
+.heatmap-calendar.compact-view .project-header::before {
+  height: 18px; /* Smaller pill height */
+  width: 3px;
+}
+
+.heatmap-calendar.compact-view .project-header:hover::before {
+  height: 22px; /* Smaller hover state */
+  width: 4px;
+}
+
+/* Event names are hidden in compact view via JS, but outlines remain */
+.heatmap-calendar.compact-view .cell-event-names {
+  display: none;
+}
+
+/* Responsive compact view adjustments */
+@media (max-width: 1024px) {
+  .heatmap-calendar.compact-view .project-header {
+    min-height: 24px;
+  }
+
+  .heatmap-calendar.compact-view .heatmap-cell {
+    min-height: 28px;
+  }
+
+  .heatmap-calendar.compact-view .date-header {
+    min-height: 28px;
+  }
+
+  .heatmap-calendar.compact-view .project-header::before {
+    height: 16px;
+    width: 3px;
+  }
+
+  .heatmap-calendar.compact-view .project-header:hover::before {
+    height: 18px;
+    width: 3px;
+  }
+}
+
+@media (max-width: 768px) {
+  .heatmap-calendar.compact-view .project-header {
+    min-height: 20px;
+    padding: var(--spacing-xs);
+  }
+
+  .heatmap-calendar.compact-view .project-name {
+    font-size: 0.7rem;
+  }
+
+  .heatmap-calendar.compact-view .heatmap-cell {
+    min-height: 24px;
+  }
+
+  .heatmap-calendar.compact-view .date-header {
+    min-height: 24px;
+  }
+
+  .heatmap-calendar.compact-view .project-header::before {
+    height: 14px;
+    width: 2px;
+    left: 3px;
+  }
+
+  .heatmap-calendar.compact-view .project-header:hover::before {
+    height: 16px;
+    width: 2px;
+  }
+}
+
 /* Header styles */
 .heatmap-header {
   padding: var(--spacing-xs);
@@ -310,16 +406,12 @@
   font-weight: 600;
   font-size: 0.875rem;
   white-space: nowrap;
-  margin-left: 1em;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
   text-shadow: 0px 0px 0px rgba(0, 0, 0, 0.1);
-  width: 100%;
-}
-
-.project-events-count {
-  font-size: 0.75rem;
+  width: 100%; /* Take full available width */
+  margin-left: 1em;
 }
 
 /* Right actions - appear on hover */
