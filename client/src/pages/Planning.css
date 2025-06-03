@@ -1,0 +1,50 @@
+.planning {
+  max-width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-top: 32px;
+}
+
+/* Heatmap section - upper part, fixed height */
+.planning-heatmap-section {
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible;
+  flex-shrink: 0; /* Prevent heatmap from shrinking */
+  padding: var(--spacing-xl);
+}
+
+/* TaskLists section - lower part, scrollable */
+.planning-tasklists-section {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 0; /* Allow section to shrink */
+  padding: 0 var(--spacing-xl) var(--spacing-xl) var(--spacing-xl);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .planning-heatmap-section {
+    padding: var(--spacing-lg);
+  }
+  
+  .planning-tasklists-section {
+    padding: 0 var(--spacing-lg) var(--spacing-lg) var(--spacing-lg);
+  }
+}
+
+@media (max-width: 480px) {
+  .planning-heatmap-section {
+    padding: var(--spacing-md);
+  }
+  
+  .planning-tasklists-section {
+    padding: 0 var(--spacing-md) var(--spacing-md) var(--spacing-md);
+  }
+} 

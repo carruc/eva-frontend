@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faAngleRight, 
   faAngleLeft, 
   faCog, 
   faSearch,
-  faChartLine,
+  faHome,
   faCalendarAlt,
   faUser
 } from '@fortawesome/free-solid-svg-icons';
@@ -13,19 +14,23 @@ import './Sidebar.css';
 
 const Sidebar = ({ isCollapsed, onToggle, projects = [] }) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const navigationItems = [
     { 
-      id: 'dashboard', 
-      label: 'Dashboard', 
-      isActive: false,
-      icon: faChartLine
+      id: 'homepage', 
+      label: 'Homepage', 
+      isActive: location.pathname === '/',
+      icon: faHome,
+      path: '/'
     },
     { 
       id: 'planning', 
       label: 'Planning', 
-      isActive: false,
-      icon: faCalendarAlt
+      isActive: location.pathname === '/planning',
+      icon: faCalendarAlt,
+      path: '/planning'
     }
   ];
 
@@ -33,9 +38,8 @@ const Sidebar = ({ isCollapsed, onToggle, projects = [] }) => {
     setSearchTerm(e.target.value);
   };
 
-  const handleItemClick = (itemId) => {
-    console.log(`Navigation to ${itemId}`);
-    // Navigation logic will be implemented when routing is added
+  const handleItemClick = (itemPath) => {
+    navigate(itemPath);
   };
 
   const filteredProjects = projects.filter(project =>
@@ -99,7 +103,7 @@ const Sidebar = ({ isCollapsed, onToggle, projects = [] }) => {
                 <li key={item.id} className="nav-item">
                   <button
                     className={`nav-link ${item.isActive ? 'nav-link-active' : ''}`}
-                    onClick={() => handleItemClick(item.id)}
+                    onClick={() => handleItemClick(item.path)}
                   >
                     <FontAwesomeIcon icon={item.icon} className="nav-icon" />
                     <span className="nav-label">{item.label}</span>
@@ -116,7 +120,7 @@ const Sidebar = ({ isCollapsed, onToggle, projects = [] }) => {
                     <button
                       key={project.id}
                       className="project-item"
-                      onClick={() => handleItemClick(`project-${project.id}`)}
+                      onClick={() => handleItemClick(`/project/${project.id}`)}
                       title={project.name}
                     >
                       <span className="project-color" style={{ backgroundColor: project.color }}></span>

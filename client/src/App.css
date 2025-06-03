@@ -71,46 +71,13 @@
   opacity: 1;
 }
 
-/* Main content area */
+/* Main content area - simplified for page-based routing */
 .app-main {
   flex: 1;
-  padding: var(--spacing-xl);
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-lg);
-  max-width: 100%;
   overflow: hidden; /* Prevent any overflow in main content */
   min-height: 0; /* Allow flex items to shrink */
-}
-
-.heatmap-section {
-  background-color: transparent;
-  border: none;
-  border-radius: 0;
-  box-shadow: none;
-  overflow: visible;
-  flex-shrink: 0; /* Prevent heatmap from shrinking */
-  margin-top: var(--spacing-xl); /* Add vertical space above heatmap */
-}
-
-/* Action buttons section positioned under heatmap */
-.action-buttons-section {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--spacing-md);
-  margin-top: calc(-1 * var(--spacing-lg));
-  margin-bottom: var(--spacing-md);
-  flex-shrink: 0; /* Prevent action buttons from shrinking */
-}
-
-.tasklists-section {
-  flex: 1;
-  /* Add scrollable container for task lists */
-  overflow: hidden;
   display: flex;
   flex-direction: column;
-  min-height: 0; /* Allow section to shrink */
 }
 
 /* Loading state */
@@ -138,15 +105,21 @@
   100% { transform: rotate(360deg); }
 }
 
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
 /* Responsive design */
 @media (max-width: 1024px) {
   .app-layout.sidebar-expanded {
     margin-left: 260px;
-  }
-  
-  .app-main {
-    padding: var(--spacing-lg);
-    gap: var(--spacing-lg);
   }
 }
 
@@ -156,27 +129,10 @@
     margin-left: 0;
   }
   
-  .app-main {
-    padding: var(--spacing-lg);
-    gap: var(--spacing-lg);
-    /* Maintain overflow hidden on mobile */
-    overflow: hidden;
-  }
-  
   .floating-theme-toggle {
     bottom: 1rem;
     right: 1rem;
     opacity: 0.7;
-  }
-  
-  .action-buttons-section {
-    flex-direction: column;
-    gap: var(--spacing-sm);
-  }
-  
-  .action-buttons-section .btn {
-    width: 100%;
-    justify-content: center;
   }
   
   .error-banner {
@@ -186,22 +142,9 @@
 }
 
 @media (max-width: 480px) {
-  .app-main {
-    padding: var(--spacing-md);
-    gap: var(--spacing-md);
-    /* Maintain overflow hidden on small mobile */
-    overflow: hidden;
-  }
-  
   .floating-theme-toggle {
     bottom: 0.75rem;
     right: 0.75rem;
     opacity: 0.8;
-  }
-  
-  .action-buttons-section {
-    gap: var(--spacing-xs);
-    margin-top: calc(-1 * var(--spacing-md));
-    margin-bottom: var(--spacing-sm);
   }
 } 

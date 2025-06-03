@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import HeatmapCalendar from './components/HeatmapCalendar';
-import TaskLists from './components/TaskLists';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Homepage from './pages/Homepage';
+import Planning from './pages/Planning';
 import ProjectModal from './components/ProjectModal';
 import EventModal from './components/EventModal';
 import ThemeToggle from './components/ThemeToggle';
@@ -226,104 +227,102 @@ function App() {
   }
 
   return (
-    <div className="app">
-      {/* Sidebar */}
-      <Sidebar 
-        isCollapsed={sidebarCollapsed}
-        onToggle={handleToggleSidebar}
-        projects={projects}
-      />
+    <Router>
+      <div className="app">
+        {/* Sidebar */}
+        <Sidebar 
+          isCollapsed={sidebarCollapsed}
+          onToggle={handleToggleSidebar}
+          projects={projects}
+        />
 
-      {/* Main application content */}
-      <div className={`app-layout ${sidebarCollapsed ? 'sidebar-collapsed' : 'sidebar-expanded'}`}>
-        {/* Error display */}
-        {error && (
-          <div className="error-banner">
-            <span>{error}</span>
-            <button 
-              className="btn-ghost"
-              onClick={() => setError(null)}
-            >
-              ×
-            </button>
-          </div>
+        {/* Main application content */}
+        <div className={`app-layout ${sidebarCollapsed ? 'sidebar-collapsed' : 'sidebar-expanded'}`}>
+          {/* Error display */}
+          {error && (
+            <div className="error-banner">
+              <span>{error}</span>
+              <button 
+                className="btn-ghost"
+                onClick={() => setError(null)}
+              >
+                ×
+              </button>
+            </div>
+          )}
+
+          <main className="app-main">
+            <Routes>
+              <Route 
+                path="/" 
+                element={<Homepage />} 
+              />
+              <Route 
+                path="/planning" 
+                element={
+                  <Planning
+                    projects={projects}
+                    tasks={tasks}
+                    events={events}
+                    timeScale={timeScale}
+                    currentDate={currentDate}
+                    onTimeScaleChange={setTimeScale}
+                    onCurrentDateChange={setCurrentDate}
+                    onProjectUpdate={handleUpdateProject}
+                    onProjectDelete={handleDeleteProject}
+                    onProjectEdit={handleEditProject}
+                    onEventEdit={handleEditEvent}
+                    onEventDelete={handleDeleteEvent}
+                    onNewProject={() => setShowProjectModal(true)}
+                    onNewEvent={handleCreateEvent}
+                    showEventTitles={showEventTitles}
+                    onToggleEventTitles={handleToggleEventTitles}
+                    sidebarCollapsed={sidebarCollapsed}
+                    onTaskCreate={handleCreateTask}
+                    onTaskUpdate={handleUpdateTask}
+                    onTaskDelete={handleDeleteTask}
+                    onTaskToggle={handleToggleTaskComplete}
+                  />
+                } 
+              />
+            </Routes>
+          </main>
+
+          {/* Floating Theme Toggle */}
+          <ThemeToggle className="floating-theme-toggle" />
+        </div>
+
+        {/* Modals */}
+        {showProjectModal && (
+          <ProjectModal
+            project={editingProject}
+            onSave={editingProject ? 
+              (data) => handleUpdateProject(editingProject.id, data) : 
+              handleCreateProject
+            }
+            onClose={() => {
+              setShowProjectModal(false);
+              setEditingProject(null);
+            }}
+          />
         )}
 
-        <main className="app-main">
-          {/* Heatmap Calendar - Implements R14, R15, D1-D8 */}
-          <section className="heatmap-section">
-            <HeatmapCalendar
-              projects={projects}
-              tasks={tasks}
-              events={events}
-              timeScale={timeScale}
-              currentDate={currentDate}
-              onTimeScaleChange={setTimeScale}
-              onCurrentDateChange={setCurrentDate}
-              onProjectUpdate={handleUpdateProject}
-              onProjectDelete={handleDeleteProject}
-              onProjectEdit={handleEditProject}
-              onEventEdit={handleEditEvent}
-              onEventDelete={handleDeleteEvent}
-              onNewProject={() => setShowProjectModal(true)}
-              onNewEvent={handleCreateEvent}
-              showEventTitles={showEventTitles}
-              onToggleEventTitles={handleToggleEventTitles}
-              sidebarCollapsed={sidebarCollapsed}
-            />
-          </section>
-
-          {/* Task Lists - Implements R16, D9-D12 */}
-          <section className="tasklists-section">
-            <TaskLists
-              projects={projects}
-              tasks={tasks}
-              events={events}
-              onTaskCreate={handleCreateTask}
-              onTaskUpdate={handleUpdateTask}
-              onTaskDelete={handleDeleteTask}
-              onTaskToggle={handleToggleTaskComplete}
-              onProjectUpdate={handleUpdateProject}
-              onProjectEdit={handleEditProject}
-              onProjectDelete={handleDeleteProject}
-            />
-          </section>
-        </main>
-
-        {/* Floating Theme Toggle */}
-        <ThemeToggle className="floating-theme-toggle" />
+        {showEventModal && (
+          <EventModal
+            event={editingEvent}
+            projects={projects}
+            onSave={editingEvent ? 
+              (data) => handleUpdateEvent(editingEvent.id, data) : 
+              handleCreateEvent
+            }
+            onClose={() => {
+              setShowEventModal(false);
+              setEditingEvent(null);
+            }}
+          />
+        )}
       </div>
-
-      {/* Modals */}
-      {showProjectModal && (
-        <ProjectModal
-          project={editingProject}
-          onSave={editingProject ? 
-            (data) => handleUpdateProject(editingProject.id, data) : 
-            handleCreateProject
-          }
-          onClose={() => {
-            setShowProjectModal(false);
-            setEditingProject(null);
-          }}
-        />
-      )}
-
-      {showEventModal && (
-        <EventModal
-          event={editingEvent}
-          projects={projects}
-          onSave={editingEvent ? 
-            (data) => handleUpdateEvent(editingEvent.id, data) : 
-            handleCreateEvent
-          }
-          onClose={() => {
-            setShowEventModal(false);
-            setEditingEvent(null);
-          }}
-        />
-      )}
-    </div>
+    </Router>
   );
 }
 
