@@ -9,7 +9,8 @@ const ProjectModal = ({ project, existingDeadline, onSave, onClose }) => {
     name: '',
     color: '#3b82f6',
     deadline: '',
-    deadlineTime: '23:59' // Default to end of day
+    deadlineTime: '23:59', // Default to end of day
+    deadlineName: '' // Add deadline name field
   });
   const [errors, setErrors] = useState({});
   const [showColorPicker, setShowColorPicker] = useState(false);
@@ -38,7 +39,8 @@ const ProjectModal = ({ project, existingDeadline, onSave, onClose }) => {
         setFormData(prev => ({
           ...prev,
           deadline: dateValue,
-          deadlineTime: deadlineDate.toTimeString().slice(0, 5)
+          deadlineTime: deadlineDate.toTimeString().slice(0, 5),
+          deadlineName: existingDeadline.name
         }));
         setDateInput(formatDateToShort(dateValue));
       }
@@ -247,7 +249,7 @@ const ProjectModal = ({ project, existingDeadline, onSave, onClose }) => {
         const deadlineDateTime = new Date(formData.deadline + 'T' + formData.deadlineTime);
         projectData.deadline = {
           date: deadlineDateTime.toISOString(),
-          name: `${formData.name.trim()} Deadline`
+          name: formData.deadlineName.trim() || `${formData.name.trim()} Deadline`
         };
       }
 
@@ -358,8 +360,21 @@ const ProjectModal = ({ project, existingDeadline, onSave, onClose }) => {
             {/* Deadline section */}
             <div className="form-group">
               <label className="form-label">
-                Project Deadline
+                Deadline *
               </label>
+              
+              {/* Deadline name input */}
+              <div className="form-subgroup">
+                <input
+                  id="deadlineName"
+                  name="deadlineName"
+                  type="text"
+                  className="input"
+                  value={formData.deadlineName}
+                  onChange={handleInputChange}
+                  placeholder={`${formData.name.trim() || 'Project'} Deadline`}
+                />
+              </div>
               
               <div className="deadline-inputs">
                 <div className="datetime-inputs">
