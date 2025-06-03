@@ -1,6 +1,14 @@
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronRight, faChevronLeft, faCog } from '@fortawesome/free-solid-svg-icons';
+import { 
+  faAngleRight, 
+  faAngleLeft, 
+  faCog, 
+  faSearch,
+  faChartLine,
+  faCalendarAlt,
+  faUser
+} from '@fortawesome/free-solid-svg-icons';
 import './Sidebar.css';
 
 const Sidebar = ({ isCollapsed, onToggle, projects = [] }) => {
@@ -10,12 +18,14 @@ const Sidebar = ({ isCollapsed, onToggle, projects = [] }) => {
     { 
       id: 'dashboard', 
       label: 'Dashboard', 
-      isActive: false 
+      isActive: false,
+      icon: faChartLine
     },
     { 
       id: 'planning', 
       label: 'Planning', 
-      isActive: true 
+      isActive: false,
+      icon: faCalendarAlt
     }
   ];
 
@@ -29,7 +39,7 @@ const Sidebar = ({ isCollapsed, onToggle, projects = [] }) => {
   };
 
   const filteredProjects = projects.filter(project =>
-    project.title.toLowerCase().includes(searchTerm.toLowerCase())
+    project.name && project.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (isCollapsed) {
@@ -39,7 +49,7 @@ const Sidebar = ({ isCollapsed, onToggle, projects = [] }) => {
         onClick={onToggle}
         aria-label="Expand sidebar"
       >
-        <FontAwesomeIcon icon={faChevronRight} />
+        <FontAwesomeIcon icon={faAngleRight} />
       </button>
     );
   }
@@ -56,7 +66,6 @@ const Sidebar = ({ isCollapsed, onToggle, projects = [] }) => {
         {/* Sidebar Header */}
         <div className="sidebar-header">
           <div className="sidebar-brand">
-            <span className="brand-icon">🔥</span>
             <span className="brand-text">EVA</span>
           </div>
           <button 
@@ -64,14 +73,14 @@ const Sidebar = ({ isCollapsed, onToggle, projects = [] }) => {
             onClick={onToggle}
             aria-label="Collapse sidebar"
           >
-            <FontAwesomeIcon icon={faChevronLeft} />
+            <FontAwesomeIcon icon={faAngleLeft} />
           </button>
         </div>
 
         {/* Search Bar */}
         <div className="sidebar-search">
           <div className="search-container">
-            <span className="search-icon">🔍</span>
+            <FontAwesomeIcon icon={faSearch} className="search-icon" />
             <input
               type="text"
               placeholder="Search..."
@@ -92,6 +101,7 @@ const Sidebar = ({ isCollapsed, onToggle, projects = [] }) => {
                     className={`nav-link ${item.isActive ? 'nav-link-active' : ''}`}
                     onClick={() => handleItemClick(item.id)}
                   >
+                    <FontAwesomeIcon icon={item.icon} className="nav-icon" />
                     <span className="nav-label">{item.label}</span>
                   </button>
                 </li>
@@ -107,10 +117,10 @@ const Sidebar = ({ isCollapsed, onToggle, projects = [] }) => {
                       key={project.id}
                       className="project-item"
                       onClick={() => handleItemClick(`project-${project.id}`)}
-                      title={project.title}
+                      title={project.name}
                     >
                       <span className="project-color" style={{ backgroundColor: project.color }}></span>
-                      <span className="project-name">{project.title}</span>
+                      <span className="project-name">{project.name}</span>
                     </button>
                   ))}
                   {filteredProjects.length === 0 && searchTerm && (
@@ -128,7 +138,9 @@ const Sidebar = ({ isCollapsed, onToggle, projects = [] }) => {
             <FontAwesomeIcon icon={faCog} />
           </button>
           <div className="user-pill">
-            <div className="user-avatar">👤</div>
+            <div className="user-avatar">
+              <FontAwesomeIcon icon={faUser} />
+            </div>
             <span className="user-name">User</span>
           </div>
         </div>
