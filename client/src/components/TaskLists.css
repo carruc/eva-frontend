@@ -375,8 +375,7 @@
   padding: var(--spacing-sm);
   border-bottom: 1px solid var(--border);
   text-align: center;
-  font-weight: 600;
-  text-transform: uppercase;
+  font-weight: 100;
   letter-spacing: 0.05em;
 }
 

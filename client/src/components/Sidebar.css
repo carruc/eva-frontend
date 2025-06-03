@@ -149,25 +149,27 @@
 /* Content Section */
 .sidebar-content {
   flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding: var(--spacing-md) 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0; /* Important for flex child to shrink */
 }
 
 /* Navigation */
 .sidebar-nav {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-lg);
+  flex: 1;
+  min-height: 0; /* Important for flex child to shrink */
 }
 
 .nav-list {
   list-style: none;
   margin: 0;
-  padding: 0 var(--spacing-lg);
+  padding: var(--spacing-md) var(--spacing-lg) 0 var(--spacing-lg); /* Add top padding, remove bottom */
   display: flex;
   flex-direction: column;
   gap: 2px;
+  flex-shrink: 0; /* Don't shrink navigation items */
 }
 
 .nav-item {
@@ -237,14 +239,85 @@
 .projects-section {
   margin-top: var(--spacing-lg);
   padding: 0 var(--spacing-lg);
+  flex: 1; /* Take remaining space */
+  display: flex;
+  flex-direction: column;
+  min-height: 0; /* Important for flex child to shrink */
+  max-height: 100%; /* Don't exceed available space */
+}
+
+.projects-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1; /* Take remaining space in projects section */
+  max-height: 100%; /* Don't exceed parent */
 }
 
 .projects-list {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  max-height: 300px;
+  /* Let it grow naturally, no initial max-height */
+  overflow-y: visible; /* Start with no scrolling */
+  overflow-x: hidden;
+  padding: var(--spacing-xs) 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* When projects list is empty or short, hide scrollbars */
+.projects-list:not(.scrollable) {
+  overflow-y: visible;
+  max-height: none; /* Allow natural sizing when not scrollable */
+}
+
+/* Show scrollbars only when needed */
+.projects-list.scrollable {
   overflow-y: auto;
+  /* Reserve space for the sticky button */
+  max-height: calc(100% - 52px);
+}
+
+/* Fade overlays for scroll effects */
+.projects-fade-overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 24px; /* Slightly larger for better fade effect */
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 2;
+}
+
+.projects-fade-overlay.visible {
+  opacity: 1;
+}
+
+.projects-fade-top {
+  top: 0;
+  background: linear-gradient(to bottom, 
+    var(--background) 0%, 
+    var(--background) 50%, 
+    transparent 100%
+  );
+}
+
+.projects-fade-bottom {
+  bottom: 0;
+  background: linear-gradient(to top, 
+    var(--background) 0%, 
+    var(--background) 50%, 
+    transparent 100%
+  );
+}
+
+/* Adjust fade overlay position when sticky button is present */
+.projects-container.has-sticky-button .projects-fade-bottom {
+  bottom: 44px; /* Height of sticky button + small margin */
 }
 
 .project-item {
@@ -263,6 +336,7 @@
   font-weight: 400;
   font-family: inherit;
   text-align: left;
+  flex-shrink: 0; /* Don't shrink project items */
 }
 
 .project-item:hover {
@@ -304,6 +378,87 @@
   color: var(--text-secondary);
   font-size: 0.875rem;
   font-style: italic;
+  flex-shrink: 0; /* Don't shrink no-projects message */
+}
+
+/* New Project Button */
+.new-project-button {
+  background: none;
+  border: 2px dashed var(--border);
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: 20px;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  position: relative;
+  margin-top: var(--spacing-xs); /* Always have some margin from list */
+}
+
+.new-project-button:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+  background-color: var(--primary-color-alpha);
+}
+
+.new-project-button:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+  background-color: var(--primary-color-alpha);
+  box-shadow: 0 0 0 3px var(--primary-color-alpha);
+}
+
+.new-project-button:active {
+  transform: scale(0.98);
+}
+
+/* Inline new project button (when list is not scrollable) */
+.new-project-button.inline {
+  position: relative;
+  margin-top: var(--spacing-xs);
+  flex-shrink: 0; /* Don't shrink the button */
+}
+
+/* Sticky new project button (when list is scrollable) */
+.new-project-button.sticky {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--background);
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+  z-index: 3;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+  margin: 0; /* Remove margins for sticky positioning */
+}
+
+.new-project-button.sticky:hover {
+  background-color: var(--primary-color-alpha);
+}
+
+/* Custom scrollbar for projects list only */
+.projects-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.projects-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.projects-list::-webkit-scrollbar-thumb {
+  background-color: var(--border);
+  border-radius: 2px;
+}
+
+.projects-list::-webkit-scrollbar-thumb:hover {
+  background-color: var(--text-secondary);
 }
 
 /* Footer Section */
@@ -376,28 +531,6 @@
   color: var(--text-primary);
   white-space: nowrap;
   text-align: left;
-}
-
-/* Custom scrollbar for sidebar content and projects list */
-.sidebar-content::-webkit-scrollbar,
-.projects-list::-webkit-scrollbar {
-  width: 4px;
-}
-
-.sidebar-content::-webkit-scrollbar-track,
-.projects-list::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.sidebar-content::-webkit-scrollbar-thumb,
-.projects-list::-webkit-scrollbar-thumb {
-  background-color: var(--border);
-  border-radius: 2px;
-}
-
-.sidebar-content::-webkit-scrollbar-thumb:hover,
-.projects-list::-webkit-scrollbar-thumb:hover {
-  background-color: var(--text-secondary);
 }
 
 /* Responsive Design */

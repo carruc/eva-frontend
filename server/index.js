@@ -37,7 +37,7 @@ const findEventById = (id) => events.find(e => e.id === id);
 
 // Project endpoints - Implements R1.1, R1.2, R2.1, R2.2, R3.1, R3.2
 app.post('/api/projects', (req, res) => {
-  const { name, color } = req.body;
+  const { name, color, hidden } = req.body;
   
   if (!name || !color) {
     return res.status(400).json({ error: 'Name and color are required' });
@@ -47,7 +47,7 @@ app.post('/api/projects', (req, res) => {
     id: uuidv4(),
     name,
     color,
-    hidden: false,
+    hidden: hidden !== undefined ? hidden : false,
     order: projects.length,
     createdAt: new Date().toISOString()
   };

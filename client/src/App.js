@@ -73,10 +73,27 @@ function App() {
   // Project management functions - Implements R1.1, R1.2, R2.1, R2.2, R3.1, R3.2
   const handleCreateProject = async (projectData) => {
     try {
-      const newProject = await apiService.createProject(projectData);
+      // Check if there are already 6 visible projects
+      const visibleProjects = projects.filter(p => !p.hidden);
+      const shouldHideNewProject = visibleProjects.length >= 6;
+      
+      // Create project data with hidden flag if limit is reached
+      const newProjectData = {
+        ...projectData,
+        hidden: shouldHideNewProject
+      };
+      
+      const newProject = await apiService.createProject(newProjectData);
       setProjects(prev => [...prev, newProject]);
       setShowProjectModal(false);
       setEditingProject(null);
+      
+      // Show a message to user if project was automatically hidden
+      if (shouldHideNewProject) {
+        setError('Project created as hidden because you already have 6 visible projects. You can show it by hiding another project first.');
+        // Clear the message after a few seconds
+        setTimeout(() => setError(null), 5000);
+      }
     } catch (err) {
       setError('Failed to create project. Please try again.');
       console.error('Error creating project:', err);
@@ -234,6 +251,7 @@ function App() {
           isCollapsed={sidebarCollapsed}
           onToggle={handleToggleSidebar}
           projects={projects}
+          onNewProject={() => setShowProjectModal(true)}
         />
 
         {/* Main application content */}

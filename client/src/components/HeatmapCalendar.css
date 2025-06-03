@@ -249,7 +249,6 @@
   background-color: transparent;
   padding: var(--spacing-xs) var(--spacing-sm); /* Reduced padding for compactness */
   border-right: none;
-  border-left: 4px solid var(--primary-color);
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
   display: flex;
   align-items: center; /* Changed to center for better alignment */
@@ -261,34 +260,33 @@
   transition: background-color 0.2s ease;
 }
 
+/* Add a vertical pill-shaped rectangle using a pseudo-element */
+.project-header::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 24px; /* Tight vertical rectangle */
+  background-color: var(--project-pill-color, var(--primary-color)); /* Use project color or fallback */
+  border-radius: 2px; /* Rounded corners to make it pill-shaped */
+  transition: all 0.2s ease;
+  z-index: 1;
+}
+
 .project-header:hover {
   background-color: rgba(0, 0, 0, 0.02);
 }
 
-/* Left actions - always visible */
-.project-actions-left {
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
+/* Slightly grow the pill on hover for nice interaction feedback */
+.project-header:hover::before {
+  height: 28px;
+  width: 5px;
+  border-radius: 2.5px;
 }
 
-.project-actions-left button {
-  padding: 2px 4px;
-  min-width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0.7;
-  transition: opacity 0.2s ease, background-color 0.2s ease;
-}
-
-.project-actions-left button:hover {
-  opacity: 1;
-  background-color: rgba(0, 0, 0, 0.05);
-}
-
-/* Project info - center */
+/* Project info */
 .project-info {
   flex: 1;
   display: flex;
@@ -296,7 +294,7 @@
   align-items: flex-start;
   gap: 2px; /* Reduced gap for compactness */
   min-width: 0;
-  margin-left: var(--spacing-xs); /* Small margin from left action */
+  margin-left: var(--spacing-md); /* Margin from the pill */
   margin-right: var(--spacing-xs); /* Small margin to right actions */
 }
 
@@ -312,6 +310,7 @@
   font-weight: 600;
   font-size: 0.875rem;
   white-space: nowrap;
+  margin-left: 1em;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
@@ -620,6 +619,18 @@
     grid-template-columns: 200px 1fr;
   }
   
+  /* Adjust pill size for tablet */
+  .project-header::before {
+    height: 20px;
+    width: 3px;
+    left: 6px;
+  }
+  
+  .project-header:hover::before {
+    height: 24px;
+    width: 4px;
+  }
+  
   /* Adjust outline offset for tablet size */
   .heatmap-cell.has-milestone .heatmap-square,
   .heatmap-cell.has-deadline .heatmap-square {
@@ -672,17 +683,30 @@
     padding: var(--spacing-sm);
   }
   
+  /* Adjust pill for mobile column layout */
+  .project-header::before {
+    height: 16px;
+    width: 3px;
+    left: 4px;
+    top: 12px; /* Fixed position from top instead of centered */
+    transform: none;
+  }
+  
+  .project-header:hover::before {
+    height: 18px;
+    width: 3px;
+  }
+  
   .project-main-info {
     width: 100%;
   }
-
+  
   /* Make right actions always visible on mobile for better touch interaction */
   .project-actions-right {
     opacity: 1;
   }
   
-  .project-actions-right > button,
-  .project-actions-left button {
+  .project-actions-right > button {
     min-width: 24px;
     height: 24px;
     padding: 4px 6px;

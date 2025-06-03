@@ -37,11 +37,20 @@ const TaskLists = ({
   const handleToggleHidden = (projectId) => {
     setHiddenProjects(prev => {
       const newSet = new Set(prev);
+      
+      // If we're trying to show a hidden project, check the 6-project limit
       if (newSet.has(projectId)) {
+        // This project is currently hidden, check if we can show it
+        const currentlyVisible = projects.filter(p => !newSet.has(p.id));
+        if (currentlyVisible.length >= 6) {
+          alert('You can only have 6 visible projects at a time. Please hide another project first.');
+          return prev; // Return the previous state unchanged
+        }
         newSet.delete(projectId);
       } else {
         newSet.add(projectId);
       }
+      
       return newSet;
     });
   };
@@ -137,7 +146,7 @@ const TaskLists = ({
         {hiddenProjectsList.length > 0 && (
           <div className="hidden-projects-sidebar">
             <div className="sidebar-header">
-              <span className="text-muted">Hidden</span>
+              <span className="text-muted">Hidden projects:</span>
             </div>
             <div className="sidebar-content">
               {hiddenProjectsList.map(project => (

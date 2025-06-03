@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import { ChevronUp, ChevronDown, ChevronLeft, ChevronRight, EyeOff, Calendar, X } from 'lucide-react';
+import { ChevronUp, ChevronDown, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { dataUtils } from '../services/api';
 import EventCard from './EventCard';
 import './HeatmapCalendar.css';
@@ -203,6 +203,16 @@ const HeatmapCalendar = ({
   const handleToggleHidden = async (projectId) => {
     const project = projects.find(p => p.id === projectId);
     if (project) {
+      // If we're trying to show a hidden project, check the 6-project limit
+      if (project.hidden) {
+        const visibleProjects = projects.filter(p => !p.hidden);
+        if (visibleProjects.length >= 6) {
+          // Don't show the project and display an error message
+          alert('You can only have 6 visible projects at a time. Please hide another project first.');
+          return;
+        }
+      }
+      
       await onProjectUpdate(projectId, { hidden: !project.hidden });
     }
   };
@@ -578,7 +588,6 @@ const HeatmapCalendar = ({
             onEventEdit={onEventEdit}
             events={dataUtils.getProjectEvents(events, project.id)}
             showEventTitles={showEventTitles}
-            onToggleEventTitles={onToggleEventTitles}
           />
         ))}
 
@@ -661,8 +670,7 @@ const ProjectRow = ({
   onCellHover,
   onEventEdit,
   events,
-  showEventTitles,
-  onToggleEventTitles
+  showEventTitles
 }) => {
 
   return (
@@ -671,23 +679,9 @@ const ProjectRow = ({
         {/* Project header */}
         <div 
           className="project-header"
-          style={{ borderLeftColor: project.color }}
+          style={{ '--project-pill-color': project.color }}
         >
-          {/* Show events button - always visible on the left */}
-          <div className="project-actions-left">
-            <button
-              className="btn-ghost btn-sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                onToggleEventTitles();
-              }}
-              title={showEventTitles ? "Hide event titles" : "Show event titles"}
-            >
-              {showEventTitles ? <Calendar size={14} /> : <EyeOff size={14} />}
-            </button>
-          </div>
-
-          {/* Project info in the center */}
+          {/* Project info */}
           <div className="project-info">
             <div className="project-main-info">
               <span className="project-name" title={project.name}>{project.name}</span>
