@@ -52,15 +52,29 @@ function App() {
   const loadData = async () => {
     try {
       setLoading(true);
-      const [projectsData, tasksData, eventsData] = await Promise.all([
-        apiService.getProjects(),
-        apiService.getTasks(),
-        apiService.getEvents()
-      ]);
       
+      // First load projects
+      const projectsData = await apiService.getProjects();
       setProjects(projectsData);
-      setTasks(tasksData);
-      setEvents(eventsData);
+      
+      // Then load tasks and events for each project
+      const allTasks = [];
+      const allEvents = [];
+      
+      for (const project of projectsData) {
+        try {
+          const projectTasks = await apiService.getTasks(project.id);
+          const projectEvents = await apiService.getEvents(project.id);
+          allTasks.push(...projectTasks);
+          allEvents.push(...projectEvents);
+        } catch (err) {
+          console.warn(`Failed to load data for project ${project.id}:`, err);
+          // Continue loading other projects even if one fails
+        }
+      }
+      
+      setTasks(allTasks);
+      setEvents(allEvents);
       setError(null);
     } catch (err) {
       setError('Failed to load data. Please try again.');
@@ -94,11 +108,10 @@ function App() {
         try {
           const deadlineEventData = {
             name: deadline.name,
-            projectId: newProject.id,
             date: deadline.date,
             type: 'deadline'
           };
-          const newDeadline = await apiService.createEvent(deadlineEventData);
+          const newDeadline = await apiService.createEvent(newProject.id, deadlineEventData);
           setEvents(prev => [...prev, newDeadline]);
         } catch (deadlineErr) {
           console.error('Error creating deadline:', deadlineErr);
@@ -135,7 +148,6 @@ function App() {
       if (deadline) {
         const deadlineEventData = {
           name: deadline.name,
-          projectId: projectId,
           date: deadline.date,
           type: 'deadline'
         };
@@ -143,7 +155,7 @@ function App() {
         if (existingDeadline) {
           // Update existing deadline
           try {
-            const updatedDeadline = await apiService.updateEvent(existingDeadline.id, deadlineEventData);
+            const updatedDeadline = await apiService.updateEvent(projectId, existingDeadline.id, deadlineEventData);
             setEvents(prev => prev.map(e => e.id === existingDeadline.id ? updatedDeadline : e));
           } catch (deadlineErr) {
             console.error('Error updating deadline:', deadlineErr);
@@ -152,7 +164,7 @@ function App() {
         } else {
           // Create new deadline
           try {
-            const newDeadline = await apiService.createEvent(deadlineEventData);
+            const newDeadline = await apiService.createEvent(projectId, deadlineEventData);
             setEvents(prev => [...prev, newDeadline]);
           } catch (deadlineErr) {
             console.error('Error creating deadline:', deadlineErr);
@@ -193,7 +205,8 @@ function App() {
   // Event management functions - Implements R7.1, R7.2, R8.1, R8.2, R9.1, R9.2, R9.3
   const handleCreateEvent = async (eventData) => {
     try {
-      const newEvent = await apiService.createEvent(eventData);
+      const { projectId, ...eventDetails } = eventData;
+      const newEvent = await apiService.createEvent(projectId, eventDetails);
       setEvents(prev => [...prev, newEvent]);
       setShowEventModal(false);
       setEditingEvent(null);
@@ -205,7 +218,11 @@ function App() {
 
   const handleUpdateEvent = async (eventId, updates) => {
     try {
-      const updatedEvent = await apiService.updateEvent(eventId, updates);
+      const event = events.find(e => e.id === eventId);
+      if (!event) {
+        throw new Error('Event not found');
+      }
+      const updatedEvent = await apiService.updateEvent(event.projectId, eventId, updates);
       setEvents(prev => prev.map(e => e.id === eventId ? updatedEvent : e));
       
       if (editingEvent) {
@@ -224,7 +241,11 @@ function App() {
     }
 
     try {
-      await apiService.deleteEvent(eventId);
+      const event = events.find(e => e.id === eventId);
+      if (!event) {
+        throw new Error('Event not found');
+      }
+      await apiService.deleteEvent(event.projectId, eventId);
       setEvents(prev => prev.filter(e => e.id !== eventId));
       // Update tasks that were associated with this event
       setTasks(prev => prev.map(task => 
@@ -239,7 +260,8 @@ function App() {
   // Task management functions - Implements R10.1, R10.2, R11.1, R11.2, R12.1, R12.2, R12.3, R13.1, R13.2
   const handleCreateTask = async (taskData) => {
     try {
-      const newTask = await apiService.createTask(taskData);
+      const { projectId, ...taskDetails } = taskData;
+      const newTask = await apiService.createTask(projectId, taskDetails);
       setTasks(prev => [...prev, newTask]);
     } catch (err) {
       setError('Failed to create task. Please try again.');
@@ -249,7 +271,11 @@ function App() {
 
   const handleUpdateTask = async (taskId, updates) => {
     try {
-      const updatedTask = await apiService.updateTask(taskId, updates);
+      const task = tasks.find(t => t.id === taskId);
+      if (!task) {
+        throw new Error('Task not found');
+      }
+      const updatedTask = await apiService.updateTask(task.projectId, taskId, updates);
       setTasks(prev => prev.map(t => t.id === taskId ? updatedTask : t));
     } catch (err) {
       setError('Failed to update task. Please try again.');
@@ -259,7 +285,11 @@ function App() {
 
   const handleDeleteTask = async (taskId) => {
     try {
-      await apiService.deleteTask(taskId);
+      const task = tasks.find(t => t.id === taskId);
+      if (!task) {
+        throw new Error('Task not found');
+      }
+      await apiService.deleteTask(task.projectId, taskId);
       setTasks(prev => prev.filter(t => t.id !== taskId));
     } catch (err) {
       setError('Failed to delete task. Please try again.');
