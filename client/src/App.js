@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Homepage from './pages/Homepage';
 import Planning from './pages/Planning';
+import Project from './pages/Project';
 import ProjectModal from './components/ProjectModal';
 import EventModal from './components/EventModal';
 import ThemeToggle from './components/ThemeToggle';
@@ -391,6 +392,10 @@ function App() {
                     onTaskToggle={handleToggleTaskComplete}
                   />
                 } 
+              />
+              <Route 
+                path="/project/:projectId" 
+                element={<Project />} 
               />
             </Routes>
           </main>

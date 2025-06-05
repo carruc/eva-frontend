@@ -8,39 +8,106 @@
   overflow: hidden;
 }
 
-.task-lists-container {
+.task-lists-wrapper {
   display: flex;
   gap: var(--spacing-lg);
   align-items: flex-start;
-  /* Enable scrolling for the container */
   flex: 1;
-  overflow-y: auto;
+  min-height: 0;
+}
+
+.task-lists-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.task-lists-content {
+  display: flex;
+  gap: var(--spacing-lg);
+  align-items: flex-start;
+  /* Let it grow naturally, no initial max-height */
+  overflow-y: visible; /* Start with no scrolling */
   overflow-x: hidden;
-  /* Custom scrollbar styling for better UX */
+  padding: var(--spacing-xs) 0;
   scrollbar-width: thin;
   scrollbar-color: var(--border) transparent;
+  -webkit-overflow-scrolling: touch;
+  /* Add smooth scrolling */
+  scroll-behavior: smooth;
+  scroll-padding-top: 20px;
+  scroll-padding-bottom: 20px;
   /* Add space on the right to avoid scrollbar being too close to content */
   padding-right: var(--spacing-md);
 }
 
+/* When content is empty or short, hide scrollbars */
+.task-lists-content:not(.scrollable) {
+  overflow-y: visible;
+  max-height: none; /* Allow natural sizing when not scrollable */
+}
+
+/* Show scrollbars only when needed */
+.task-lists-content.scrollable {
+  overflow-y: auto;
+  /* Reserve space for scrolling */
+  max-height: 100%;
+}
+
 /* Custom webkit scrollbar for better cross-browser support */
-.task-lists-container::-webkit-scrollbar {
+.task-lists-content::-webkit-scrollbar {
   width: 8px;
 }
 
-.task-lists-container::-webkit-scrollbar-track {
+.task-lists-content::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.task-lists-container::-webkit-scrollbar-thumb {
+.task-lists-content::-webkit-scrollbar-thumb {
   background-color: var(--border);
   border-radius: 4px;
   border: 2px solid transparent;
   background-clip: content-box;
 }
 
-.task-lists-container::-webkit-scrollbar-thumb:hover {
+.task-lists-content::-webkit-scrollbar-thumb:hover {
   background-color: var(--border-dark, var(--text-secondary));
+}
+
+/* Fade overlays for scroll effects */
+.task-lists-fade-overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 24px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 100;
+}
+
+.task-lists-fade-overlay.visible {
+  opacity: 1;
+}
+
+.task-lists-fade-top {
+  top: 0;
+  background: linear-gradient(to bottom, 
+    var(--background) 0%, 
+    var(--background) 50%, 
+    transparent 100%
+  );
+}
+
+.task-lists-fade-bottom {
+  bottom: 0;
+  background: linear-gradient(to top, 
+    var(--background) 0%, 
+    var(--background) 50%, 
+    transparent 100%
+  );
 }
 
 .task-lists-header {
@@ -64,6 +131,8 @@
   align-content: start;
   /* Prevent cards from stretching vertically */
   align-items: start;
+  /* Ensure grid can grow to trigger scrolling */
+  width: 100%;
 }
 
 /* Individual project task card */
@@ -87,7 +156,7 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: var(--spacing-md);
+  margin-bottom: 0;
 }
 
 .project-card-info {
@@ -95,9 +164,24 @@
 }
 
 .project-card-title {
-  font-size: 1.125rem;
+  margin: 0;
+  font-size: 1.25rem;
   font-weight: 600;
-  margin: 0 0 var(--spacing-xs) 0;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.project-card-title.clickable {
+  cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.project-card-title.clickable:hover {
+  opacity: 0.8;
+  transform: translateX(2px);
 }
 
 .project-card-stats {
@@ -634,6 +718,9 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-xs);
+  /* Ensure content doesn't break layout */
+  min-width: 0;
+  overflow: hidden;
 }
 
 .task-creator-input {
@@ -648,6 +735,10 @@
   resize: none;
   outline: none;
   transition: border-color 0.2s ease;
+  /* Add text truncation for long content */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .task-creator-input:focus {
@@ -691,6 +782,9 @@
   cursor: pointer;
   transition: all 0.2s ease;
   border: 1px solid transparent;
+  /* Ensure long content doesn't break layout */
+  min-width: 0;
+  overflow: hidden;
 }
 
 .event-option:hover {
@@ -736,6 +830,9 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
+  /* Ensure long content doesn't break layout */
+  min-width: 0;
+  overflow: hidden;
 }
 
 .event-option .event-name {
@@ -743,6 +840,10 @@
   font-weight: 500;
   color: var(--text-primary);
   line-height: 1.2;
+  /* Add text truncation for long event names */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .event-type-badge {
@@ -754,6 +855,11 @@
   text-transform: uppercase;
   max-width: fit-content;
   line-height: 1;
+  /* Add text truncation for long badge text */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 80px;
 }
 
 .event-type-badge.milestone {
@@ -770,6 +876,10 @@
   font-size: 0.7rem;
   color: var(--text-muted);
   line-height: 1;
+  /* Add text truncation for long dates */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .task-creator-event-select {

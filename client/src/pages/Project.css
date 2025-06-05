@@ -1,0 +1,121 @@
+/* Project Page Styles */
+.project-page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--background);
+  overflow: auto;
+  padding: var(--spacing-lg);
+}
+
+/* Project header with left-aligned title */
+.project-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-shrink: 0;
+}
+
+.project-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: left;
+}
+
+/* Project content area */
+.project-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  position: relative;
+}
+
+/* Center container for the button */
+.project-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Learning session button styles */
+.learning-session-btn {
+  font-size: 1.125rem;
+  font-weight: 600;
+  padding: var(--spacing-md) var(--spacing-xl);
+  min-width: 200px;
+  height: 56px;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-lg);
+  border: none;
+  text-transform: lowercase;
+  letter-spacing: 0.5px;
+}
+
+.learning-session-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+}
+
+.learning-session-btn:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-md);
+}
+
+/* Loading and error states */
+.project-loading,
+.project-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 1.125rem;
+}
+
+.project-error {
+  color: var(--error-color);
+}
+
+.project-loading p,
+.project-error p {
+  margin: 0;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .project-page {
+    padding: var(--spacing-md);
+  }
+  
+  .project-title {
+    font-size: 2rem;
+  }
+  
+  .learning-session-btn {
+    font-size: 1rem;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    min-width: 180px;
+    height: 48px;
+  }
+}
+
+@media (max-width: 480px) {
+  .project-page {
+    padding: var(--spacing-sm);
+  }
+  
+  .project-title {
+    font-size: 1.75rem;
+  }
+  
+  .learning-session-btn {
+    font-size: 0.95rem;
+    padding: var(--spacing-sm) var(--spacing-md);
+    min-width: 160px;
+    height: 44px;
+  }
+} 

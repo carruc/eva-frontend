@@ -1,7 +1,7 @@
 {
   "short_name": "EVA",
-  "name": "EVA - Task Management & Time Tracking",
-  "description": "Heat of the Day - Task management and long-term time management tool",
+  "name": "EVA - your Learning Evaluation Agent",
+  "description": "EVA is a continuous assessment platform",
   "icons": [
     {
       "src": "favicon.ico",

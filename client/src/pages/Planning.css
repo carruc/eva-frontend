@@ -15,7 +15,7 @@
   box-shadow: none;
   overflow: visible;
   flex-shrink: 0; 
-  padding: 2.5em 3em 1em 3em;
+  padding: 2.5em 2.5em 0em 2.5em;
 }
 
 /* TaskLists section - lower part, scrollable */
@@ -25,7 +25,7 @@
   display: flex;
   flex-direction: column;
   min-height: 0; /* Allow section to shrink */
-  padding: 1em 3em 3em 3em;
+  padding: 0em var(--spacing-md) var(--spacing-md) var(--spacing-md);
 }
 
 /* Responsive adjustments */

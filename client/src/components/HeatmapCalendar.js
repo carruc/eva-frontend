@@ -543,7 +543,7 @@ const HeatmapCalendar = ({
       <div className="heatmap-grid">
         {/* Month headers - Implements D1.2 */}
         <div className="month-headers" style={{ gridTemplateColumns }}>
-          <div className="project-column-header"></div>
+          <div className="heatmap-project-column-header"></div>
           {dateRange.map((date, index) => {
             const monthHeader = monthHeaders.find(h => h.position === index + 1);
             return (
@@ -563,7 +563,7 @@ const HeatmapCalendar = ({
 
         {/* Date headers */}
         <div className="date-headers" style={{ gridTemplateColumns }}>
-          <div className="project-column-header">Projects</div>
+          <div className="heatmap-project-column-header">Projects</div>
           {dateRange.map((date, index) => {
             const today = new Date();
             const isPastDate = date < today && date.toDateString() !== today.toDateString();
@@ -624,7 +624,7 @@ const HeatmapCalendar = ({
         )}
 
         {/* Action buttons */}
-        <div className="heatmap-action-buttons">
+        <div className="heatmap-action-buttons" style={{ position: 'relative' }}>
           <button 
             className="btn btn-primary btn-project"
             onClick={onNewProject}
@@ -638,6 +638,11 @@ const HeatmapCalendar = ({
           >
             + New Event
           </button>
+          
+          {/* Tooltip for hovered cell */}
+          {hoveredCell && (
+            <CellTooltip hoveredCell={hoveredCell} />
+          )}
         </div>
       </div>
 
@@ -649,11 +654,6 @@ const HeatmapCalendar = ({
           onEventDelete={onEventDelete}
           onClose={() => setContextMenu(null)}
         />
-      )}
-
-      {/* Tooltip for hovered cell */}
-      {hoveredCell && (
-        <CellTooltip hoveredCell={hoveredCell} />
       )}
 
       {/* Event card */}
@@ -691,21 +691,21 @@ const ProjectRow = ({
 
   return (
     <>
-      <div className="project-row" style={{ gridTemplateColumns }}>
+      <div className="heatmap-project-row" style={{ gridTemplateColumns }}>
         {/* Project header */}
         <div 
-          className="project-header"
+          className="heatmap-project-header"
           style={{ '--project-pill-color': project.color }}
         >
           {/* Project info */}
-          <div className="project-info">
-            <div className="project-main-info">
-              <span className="project-name" title={project.name}>{project.name}</span>
+          <div className="heatmap-project-info">
+            <div className="heatmap-project-main-info">
+              <span className="heatmap-project-name" title={project.name}>{project.name}</span>
             </div>
           </div>
 
           {/* Move and hide buttons - appear on hover on the right */}
-          <div className="project-actions-right">
+          <div className="heatmap-project-actions-right">
             <div className="move-buttons-stack">
               <button 
                 className="btn-ghost btn-sm move-up"
@@ -759,6 +759,7 @@ const ProjectRow = ({
             <div
               key={dateIndex}
               className={`heatmap-cell ${hasDeadline ? 'has-deadline' : ''} ${hasMilestone ? 'has-milestone' : ''} ${isPastDate ? 'past-date' : ''}`}
+              style={hasDeadline ? { '--deadline-color': project.color } : {}}
               onContextMenu={(e) => onCellContextMenu(e, project, date)}
               onMouseEnter={() => onCellHover({
                 project,
@@ -800,8 +801,9 @@ const ProjectRow = ({
                         e.stopPropagation();
                         onEventEdit(event);
                       }}
+                      title={event.name}
                     >
-                      {event.name}
+                      {event.name.length > 50 ? `${event.name.substring(0, 50)}...` : event.name}
                     </div>
                   ))}
                 </div>
@@ -877,18 +879,7 @@ const CellTooltip = ({ hoveredCell }) => {
 
   return (
     <div className="cell-tooltip">
-      <div className="tooltip-header">
-        <strong style={{ color: project.color }}>{project.name}</strong>
-        <span className="text-muted">{dataUtils.formatDate(date, 'long')}</span>
-      </div>
-      <div className="tooltip-content">
-        <div>Tasks completed: {data.completedTasks}</div>
-        {data.events.length > 0 && (
-          <div>
-            Events: {data.events.map(e => e.name).join(', ')}
-          </div>
-        )}
-      </div>
+      {dataUtils.formatDate(date, 'long')}, <strong style={{ color: project.color }}>{project.name}</strong>, {data.completedTasks} tasks completed
     </div>
   );
 };

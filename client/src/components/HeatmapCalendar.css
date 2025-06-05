@@ -3,14 +3,15 @@
   background-color: transparent;
   border-radius: 0;
   overflow: visible;
+  position: relative;
 }
 
 /* Compact view styles */
-.heatmap-calendar.compact-view .project-row {
+.heatmap-calendar.compact-view .heatmap-project-row {
   /* Smaller height for compact rows */
 }
 
-.heatmap-calendar.compact-view .project-header {
+.heatmap-calendar.compact-view .heatmap-project-header {
   min-height: 20px; /* Reduced from 40px */
   padding-left: 0.5em;
   padding-right: 0em;
@@ -18,7 +19,7 @@
   padding-bottom: 0; /* Tighter padding */
 }
 
-.heatmap-calendar.compact-view .project-name {
+.heatmap-calendar.compact-view .heatmap-project-name {
   font-size: 0.75rem; /* Smaller font size */
   font-weight: 500; /* Slightly lighter weight */
 }
@@ -31,12 +32,12 @@
   min-height: 32px; /* Reduced from 48px */
 }
 
-.heatmap-calendar.compact-view .project-header::before {
+.heatmap-calendar.compact-view .heatmap-project-header::before {
   height: 18px; /* Smaller pill height */
   width: 3px;
 }
 
-.heatmap-calendar.compact-view .project-header:hover::before {
+.heatmap-calendar.compact-view .heatmap-project-header:hover::before {
   height: 22px; /* Smaller hover state */
   width: 4px;
 }
@@ -48,7 +49,7 @@
 
 /* Responsive compact view adjustments */
 @media (max-width: 1024px) {
-  .heatmap-calendar.compact-view .project-header {
+  .heatmap-calendar.compact-view .heatmap-project-header {
     min-height: 24px;
   }
 
@@ -60,24 +61,24 @@
     min-height: 28px;
   }
 
-  .heatmap-calendar.compact-view .project-header::before {
+  .heatmap-calendar.compact-view .heatmap-project-header::before {
     height: 16px;
     width: 3px;
   }
 
-  .heatmap-calendar.compact-view .project-header:hover::before {
+  .heatmap-calendar.compact-view .heatmap-project-header:hover::before {
     height: 18px;
     width: 3px;
   }
 }
 
 @media (max-width: 768px) {
-  .heatmap-calendar.compact-view .project-header {
+  .heatmap-calendar.compact-view .heatmap-project-header {
     min-height: 20px;
     padding: var(--spacing-xs);
   }
 
-  .heatmap-calendar.compact-view .project-name {
+  .heatmap-calendar.compact-view .heatmap-project-name {
     font-size: 0.7rem;
   }
 
@@ -89,13 +90,13 @@
     min-height: 24px;
   }
 
-  .heatmap-calendar.compact-view .project-header::before {
+  .heatmap-calendar.compact-view .heatmap-project-header::before {
     height: 14px;
     width: 2px;
     left: 3px;
   }
 
-  .heatmap-calendar.compact-view .project-header:hover::before {
+  .heatmap-calendar.compact-view .heatmap-project-header:hover::before {
     height: 16px;
     width: 2px;
   }
@@ -198,14 +199,14 @@
 
 .month-headers,
 .date-headers,
-.project-row {
+.heatmap-project-row {
   display: grid;
   grid-template-columns: 250px repeat(auto-fit, minmax(20px, 32px));
   gap: 1px;
   margin-bottom: 1px;
 }
 
-.project-column-header {
+.heatmap-project-column-header {
   background-color: transparent;
   padding: var(--spacing-sm) var(--spacing-sm);
   font-weight: 600;
@@ -218,7 +219,7 @@
 }
 
 /* Horizontal line under "Project" text */
-.project-column-header:not(:empty)::after {
+.heatmap-project-column-header:not(:empty)::after {
   content: '';
   position: absolute;
   left: var(--spacing-md);
@@ -236,7 +237,7 @@
 }
 
 /* Month headers */
-.month-headers .project-column-header {
+.month-headers .heatmap-project-column-header {
   min-height: 20px;
   padding: var(--spacing-xs) var(--spacing-md);
 }
@@ -311,6 +312,7 @@
   justify-content: center;
   min-height: 48px;
   min-width: 20px;
+  transition: min-height 0.3s ease, min-width 0.3s ease;
 }
 
 .date-header.past-date {
@@ -326,6 +328,7 @@
   font-weight: 600;
   font-size: 0.875rem;
   text-shadow: 0px 0px 0px rgba(0, 0, 0, 0.1);
+  transition: font-size 0.3s ease;
 }
 
 .date-weekday {
@@ -333,15 +336,16 @@
   color: var(--text-muted);
   text-transform: uppercase;
   text-shadow: 0px 0px 0px rgba(0, 0, 0, 0.1);
+  transition: font-size 0.3s ease;
 }
 
-/* Project row styles */
-.project-row {
+/* Heatmap project row styles */
+.heatmap-project-row {
   border-bottom: none;
   position: relative;
 }
 
-.project-header {
+.heatmap-project-header {
   background-color: transparent;
   padding: var(--spacing-xs) var(--spacing-sm); /* Reduced padding for compactness */
   border-right: none;
@@ -353,11 +357,11 @@
   min-height: 40px; /* Reduced height for compactness */
   position: relative;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, min-height 0.3s ease, padding 0.3s ease;
 }
 
 /* Add a vertical pill-shaped rectangle using a pseudo-element */
-.project-header::before {
+.heatmap-project-header::before {
   content: '';
   position: absolute;
   left: 8px;
@@ -367,23 +371,23 @@
   height: 24px; /* Tight vertical rectangle */
   background-color: var(--project-pill-color, var(--primary-color)); /* Use project color or fallback */
   border-radius: 2px; /* Rounded corners to make it pill-shaped */
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   z-index: 1;
 }
 
-.project-header:hover {
+.heatmap-project-header:hover {
   background-color: rgba(0, 0, 0, 0.02);
 }
 
 /* Slightly grow the pill on hover for nice interaction feedback */
-.project-header:hover::before {
+.heatmap-project-header:hover::before {
   height: 28px;
   width: 5px;
   border-radius: 2.5px;
 }
 
-/* Project info */
-.project-info {
+/* Heatmap project info */
+.heatmap-project-info {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -392,9 +396,10 @@
   min-width: 0;
   margin-left: var(--spacing-md); /* Margin from the pill */
   margin-right: var(--spacing-xs); /* Small margin to right actions */
+  transition: gap 0.3s ease;
 }
 
-.project-main-info {
+.heatmap-project-main-info {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -402,7 +407,7 @@
   min-width: 0;
 }
 
-.project-name {
+.heatmap-project-name {
   font-weight: 600;
   font-size: 0.875rem;
   white-space: nowrap;
@@ -412,10 +417,11 @@
   text-shadow: 0px 0px 0px rgba(0, 0, 0, 0.1);
   width: 100%; /* Take full available width */
   margin-left: 1em;
+  transition: font-size 0.3s ease, font-weight 0.3s ease;
 }
 
 /* Right actions - appear on hover */
-.project-actions-right {
+.heatmap-project-actions-right {
   display: flex;
   align-items: center;
   gap: var(--spacing-xs);
@@ -425,7 +431,7 @@
   transition: opacity 0.2s ease, visibility 0.2s ease;
 }
 
-.project-header:hover .project-actions-right {
+.heatmap-project-header:hover .heatmap-project-actions-right {
   visibility: visible;
   opacity: 1;
 }
@@ -455,7 +461,7 @@
 }
 
 /* X button (hide project) styling */
-.project-actions-right > button {
+.heatmap-project-actions-right > button {
   padding: 2px 4px;
   min-width: 20px;
   height: 20px;
@@ -466,7 +472,7 @@
   transition: opacity 0.2s ease, background-color 0.2s ease;
 }
 
-.project-actions-right > button:hover {
+.heatmap-project-actions-right > button:hover {
   opacity: 1;
   background-color: rgba(0, 0, 0, 0.05);
 }
@@ -479,7 +485,7 @@
   background-color: transparent;
   position: relative;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s ease, min-height 0.3s ease, min-width 0.3s ease;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -527,12 +533,12 @@
 /* Event names within heatmap cells */
 .cell-event-names {
   position: absolute;
-  top: calc(50% + 16px); /* Position below the 16px square with 4px padding */
-  right: calc(50% - 12px); /* Align right edge with outline right edge (8px square half + 4px outline offset) */
+  top: calc(42% + 16px); /* Position below the 16px square with 4px padding */
+  right: calc(42% - 12px); /* Align right edge with outline right edge (8px square half + 4px outline offset) */
   display: flex;
   flex-direction: column;
   gap: 1px;
-  max-width: 160px; /* Maximum width constraint */
+  max-width: 80px; /* Maximum width constraint */
   z-index: 10;
 }
 
@@ -558,13 +564,15 @@
 }
 
 .event-name.milestone {
-  background-color: rgba(156, 163, 175, 0.2);
+  background-color: transparent;
+  border: none;
   color: var(--text-muted);
 }
 
 .event-name.deadline {
-  background-color: rgba(239, 68, 68, 0.2);
-  color: var(--error-color);
+  background-color: transparent;
+  border: none;
+  color: var(--deadline-color, var(--error-color));
 }
 
 /* Hidden projects bar */
@@ -652,22 +660,26 @@
 
 /* Tooltip */
 .cell-tooltip {
-  position: fixed;
-  background-color: var(--text-primary);
-  color: white;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: transparent;
+  color: var(--text-muted);
   padding: var(--spacing-sm);
   border-radius: var(--radius);
   font-size: 0.75rem;
   z-index: 1000;
-  max-width: 200px;
+  max-width: 400px;
   pointer-events: none;
   animation: fadeIn 0.2s ease-out;
+  text-align: center;
+  white-space: nowrap;
 }
 
 .tooltip-header {
   margin-bottom: var(--spacing-xs);
   padding-bottom: var(--spacing-xs);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .tooltip-content > div {
@@ -682,12 +694,13 @@
 @media (max-width: 1024px) {
   .month-headers,
   .date-headers,
-  .project-row {
+  .heatmap-project-row {
     grid-template-columns: 200px repeat(auto-fit, minmax(18px, 28px));
   }
   
-  .project-column-header {
+  .heatmap-project-column-header {
     padding: var(--spacing-sm) var(--spacing-md);
+    transition: padding 0.3s ease;
   }
   
   .heatmap-cell {
@@ -699,6 +712,7 @@
     width: 14px;
     height: 14px;
     border-radius: 3px;
+    transition: width 0.3s ease, height 0.3s ease, border-radius 0.3s ease;
   }
   
   .date-header {
@@ -712,13 +726,13 @@
   }
   
   /* Adjust pill size for tablet */
-  .project-header::before {
+  .heatmap-project-header::before {
     height: 20px;
     width: 3px;
     left: 6px;
   }
   
-  .project-header:hover::before {
+  .heatmap-project-header:hover::before {
     height: 24px;
     width: 4px;
   }
@@ -727,12 +741,14 @@
   .heatmap-cell.has-milestone .heatmap-square,
   .heatmap-cell.has-deadline .heatmap-square {
     outline-offset: 3px;
+    transition: outline-offset 0.3s ease;
   }
 
   /* Adjust event text positioning for tablet */
   .cell-event-names {
     top: calc(50% + 14px); /* Position below the 14px square with 4px padding */
     right: calc(50% - 11px); /* Align right edge with outline right edge (7px square half + 4px outline offset) */
+    transition: top 0.3s ease, right 0.3s ease;
   }
   
   /* Adjust month indicator lines for tablet */
@@ -763,11 +779,11 @@
   
   .month-headers,
   .date-headers,
-  .project-row {
+  .heatmap-project-row {
     grid-template-columns: 160px repeat(auto-fit, minmax(16px, 24px));
   }
   
-  .project-header {
+  .heatmap-project-header {
     flex-direction: column;
     align-items: flex-start;
     gap: var(--spacing-xs);
@@ -776,7 +792,7 @@
   }
   
   /* Adjust pill for mobile column layout */
-  .project-header::before {
+  .heatmap-project-header::before {
     height: 16px;
     width: 3px;
     left: 4px;
@@ -784,24 +800,26 @@
     transform: none;
   }
   
-  .project-header:hover::before {
+  .heatmap-project-header:hover::before {
     height: 18px;
     width: 3px;
   }
   
-  .project-main-info {
+  .heatmap-project-main-info {
     width: 100%;
   }
   
   /* Make right actions always visible on mobile for better touch interaction */
-  .project-actions-right {
+  .heatmap-project-actions-right {
     opacity: 1;
+    transition: opacity 0.3s ease;
   }
   
-  .project-actions-right > button {
+  .heatmap-project-actions-right > button {
     min-width: 24px;
     height: 24px;
     padding: 4px 6px;
+    transition: min-width 0.3s ease, height 0.3s ease, padding 0.3s ease;
   }
   
   .heatmap-cell {
@@ -829,7 +847,7 @@
     font-size: 0.625rem;
   }
   
-  .project-name {
+  .heatmap-project-name {
     font-size: 0.75rem;
   }
   
@@ -851,6 +869,7 @@
   
   .event-name {
     font-size: 0.55rem;
+    transition: font-size 0.3s ease;
   }
 
   .heatmap-action-buttons {
@@ -861,6 +880,7 @@
   .heatmap-action-buttons .btn-event {
     min-width: 100px;
     font-size: 0.75rem;
+    transition: min-width 0.3s ease, font-size 0.3s ease;
   }
   
   /* Adjust month indicator lines for mobile */
@@ -880,6 +900,7 @@
     min-width: 22px;
     height: 20px;
     padding: 2px 4px;
+    transition: min-width 0.3s ease, height 0.3s ease, padding 0.3s ease;
   }
 }
 
@@ -888,7 +909,7 @@
     padding: var(--spacing-sm);
   }
   
-  .project-column-header {
+  .heatmap-project-column-header {
     padding: var(--spacing-sm);
   }
   
@@ -909,18 +930,18 @@
 
 /* Animation for smooth interactions */
 .heatmap-cell,
-.project-header,
+.heatmap-project-header,
 .event-name {
   transition: all 0.2s ease-in-out;
 }
 
-.project-row:hover .project-header {
+.heatmap-project-row:hover .heatmap-project-header {
   background-color: var(--surface-hover);
 }
 
 /* Focus styles for accessibility */
 .heatmap-cell:focus,
-.project-header button:focus {
+.heatmap-project-header button:focus {
   outline: 2px solid var(--primary-color);
   outline-offset: 2px;
 }
@@ -965,7 +986,7 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  transition: all 0.2s ease;
+  transition: all 0.2s ease, width 0.3s ease, height 0.3s ease, border-radius 0.3s ease;
   z-index: 1;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
@@ -979,7 +1000,7 @@
 }
 
 .heatmap-cell.has-deadline .heatmap-square {
-  outline: 2px solid var(--error-color);
+  outline: 2px solid var(--deadline-color, var(--error-color));
   outline-offset: 4px;
   border-radius: 4px;
 }
@@ -990,7 +1011,7 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.project-info {
+.heatmap-project-info {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -1000,7 +1021,7 @@
   margin-left: 0; /* Remove the previous margin since actions are now on the left */
 }
 
-.project-main-info {
+.heatmap-project-main-info {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -1008,7 +1029,7 @@
   min-width: 0; /* Allow shrinking */
 }
 
-.project-name {
+.heatmap-project-name {
   font-weight: 600;
   font-size: 0.875rem;
   white-space: nowrap;
@@ -1019,6 +1040,6 @@
   width: 100%; /* Take full available width */
 }
 
-.project-events-count {
+.heatmap-project-events-count {
   font-size: 0.75rem;
 } 

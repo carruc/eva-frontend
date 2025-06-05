@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Plus, Check, ChevronDown, ChevronRight, EyeOff, Edit, Trash2, X } from 'lucide-react';
 import { dataUtils } from '../services/api';
 import TaskModal from './TaskModal';
@@ -23,6 +24,11 @@ const TaskLists = ({
   const [selectedProject, setSelectedProject] = useState(null);
   const [editingTask, setEditingTask] = useState(null);
   const [creatingTaskForProject, setCreatingTaskForProject] = useState(null);
+  
+  // Scroll state management (matching Sidebar pattern)
+  const [isScrollable, setIsScrollable] = useState(false);
+  const [scrollPosition, setScrollPosition] = useState({ top: false, bottom: false });
+  const taskListsContentRef = useRef(null);
 
   // Sort projects and filter visible ones
   const visibleProjects = useMemo(() => {
@@ -32,6 +38,97 @@ const TaskLists = ({
   const hiddenProjectsList = useMemo(() => {
     return projects.filter(p => hiddenProjects.has(p.id));
   }, [projects, hiddenProjects]);
+
+  // Simple scroll state checker with hysteresis to prevent glitching (matching Sidebar)
+  const checkScrollState = useCallback(() => {
+    if (!taskListsContentRef.current) return;
+    
+    const element = taskListsContentRef.current;
+    const container = element.parentElement;
+    
+    if (!container) return;
+    
+    // Get measurements
+    const contentHeight = element.scrollHeight;
+    const availableHeight = container.clientHeight;
+    const currentlyScrollable = element.classList.contains('scrollable');
+    
+    // Add hysteresis to prevent rapid switching at the threshold
+    // Use different thresholds for entering and exiting scrollable mode
+    let needsScrolling;
+    if (currentlyScrollable) {
+      // When already scrollable, require more space to switch back (add 48px buffer)
+      needsScrolling = (contentHeight + 48) > availableHeight;
+    } else {
+      // When not scrollable, use normal threshold
+      needsScrolling = contentHeight > availableHeight;
+    }
+    
+    // Only update if state actually changes
+    if (needsScrolling !== currentlyScrollable) {
+      if (needsScrolling) {
+        element.classList.add('scrollable');
+        setIsScrollable(true);
+      } else {
+        // Add a small delay when removing scrollable state to prevent rapid toggling
+        setTimeout(() => {
+          if (!taskListsContentRef.current) return;
+          element.classList.remove('scrollable');
+          setIsScrollable(false);
+          setScrollPosition({ top: false, bottom: false });
+        }, 50);
+        return;
+      }
+    }
+    
+    // Update scroll position for fade effects (only when scrollable)
+    if (needsScrolling && element.classList.contains('scrollable')) {
+      const isAtTop = element.scrollTop === 0;
+      const isAtBottom = element.scrollTop + element.clientHeight >= element.scrollHeight - 1;
+      
+      setScrollPosition({
+        top: !isAtTop,
+        bottom: !isAtBottom
+      });
+    }
+  }, []);
+
+  // Check scroll state when projects change (matching Sidebar)
+  useEffect(() => {
+    // Use a small timeout to ensure DOM has updated
+    const timeoutId = setTimeout(checkScrollState, 10);
+    return () => clearTimeout(timeoutId);
+  }, [visibleProjects, hiddenProjects, checkScrollState]);
+
+  // Check on window resize (matching Sidebar)
+  useEffect(() => {
+    let resizeTimeout;
+    const handleResize = () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(checkScrollState, 100);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => {
+      clearTimeout(resizeTimeout);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [checkScrollState]);
+
+  // Handle scroll events (matching Sidebar)
+  const handleTaskListsScroll = () => {
+    // Only update scroll position, don't recalculate scrollable state
+    if (!taskListsContentRef.current || !isScrollable) return;
+    
+    const element = taskListsContentRef.current;
+    const isAtTop = element.scrollTop === 0;
+    const isAtBottom = element.scrollTop + element.clientHeight >= element.scrollHeight - 1;
+    
+    setScrollPosition({
+      top: !isAtTop,
+      bottom: !isAtBottom
+    });
+  };
 
   // Toggle project visibility - Implements D12
   const handleToggleHidden = (projectId) => {
@@ -118,28 +215,42 @@ const TaskLists = ({
 
   return (
     <div className="task-lists">
-      <div className="task-lists-container">
-        <div className="project-cards-grid">
-          {visibleProjects.map(project => (
-            <ProjectTaskCard
-              key={project.id}
-              project={project}
-              tasks={dataUtils.getProjectTasks(tasks, project.id)}
-              events={dataUtils.getProjectEvents(events, project.id)}
-              isExpanded={expandedProjects.has(project.id)}
-              isCreatingTask={creatingTaskForProject === project.id}
-              onToggleExpanded={() => handleToggleExpanded(project.id)}
-              onToggleHidden={() => handleToggleHidden(project.id)}
-              onCreateTask={() => handleCreateTask(project.id)}
-              onEditTask={handleEditTask}
-              onTaskToggle={onTaskToggle}
-              onTaskDelete={onTaskDelete}
-              onProjectEdit={() => onProjectEdit(project)}
-              onProjectDelete={() => onProjectDelete(project.id)}
-              onInlineTaskSave={handleInlineTaskSave}
-              onInlineTaskCancel={handleInlineTaskCancel}
-            />
-          ))}
+      <div className="task-lists-wrapper">
+        <div className={`task-lists-container ${isScrollable ? 'has-scrollable-content' : ''}`}>
+          {/* Top fade overlay */}
+          <div className={`task-lists-fade-overlay task-lists-fade-top ${scrollPosition.top ? 'visible' : ''}`} />
+          
+          <div 
+            className="task-lists-content"
+            ref={taskListsContentRef}
+            onScroll={handleTaskListsScroll}
+          >
+            <div className="project-cards-grid">
+              {visibleProjects.map(project => (
+                <ProjectTaskCard
+                  key={project.id}
+                  project={project}
+                  tasks={dataUtils.getProjectTasks(tasks, project.id)}
+                  events={dataUtils.getProjectEvents(events, project.id)}
+                  isExpanded={expandedProjects.has(project.id)}
+                  isCreatingTask={creatingTaskForProject === project.id}
+                  onToggleExpanded={() => handleToggleExpanded(project.id)}
+                  onToggleHidden={() => handleToggleHidden(project.id)}
+                  onCreateTask={() => handleCreateTask(project.id)}
+                  onEditTask={handleEditTask}
+                  onTaskToggle={onTaskToggle}
+                  onTaskDelete={onTaskDelete}
+                  onProjectEdit={() => onProjectEdit(project)}
+                  onProjectDelete={() => onProjectDelete(project.id)}
+                  onInlineTaskSave={handleInlineTaskSave}
+                  onInlineTaskCancel={handleInlineTaskCancel}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Bottom fade overlay */}
+          <div className={`task-lists-fade-overlay task-lists-fade-bottom ${scrollPosition.bottom ? 'visible' : ''}`} />
         </div>
 
         {/* Vertical hidden projects sidebar */}
@@ -197,6 +308,8 @@ const ProjectTaskCard = ({
   onInlineTaskSave,
   onInlineTaskCancel
 }) => {
+  const navigate = useNavigate();
+  
   // Separate completed and uncompleted tasks
   const uncompletedTasks = tasks.filter(t => !t.completed);
   const completedTasks = tasks.filter(t => t.completed);
@@ -210,24 +323,35 @@ const ProjectTaskCard = ({
     return { ...task, event };
   };
 
+  const handleProjectTitleClick = () => {
+    navigate(`/project/${project.id}`);
+  };
+
   return (
     <div className="project-task-card" style={{ borderTopColor: project.color }}>
       {/* Card header */}
       <div className="card-header">
         <div className="project-card-header">
           <div className="project-card-info">
-            <h3 className="project-card-title" style={{ color: project.color }}>
+            <h3 
+              className="project-card-title clickable" 
+              style={{ color: project.color }}
+              onClick={handleProjectTitleClick}
+              title={`View ${project.name} details`}
+            >
               {project.name}
             </h3>
             <div className="project-card-stats">
               <span className="tasks-count">
                 {completedCount}/{totalTasks} tasks completed
               </span>
+              {/* 
               {events.length > 0 && (
                 <span className="events-count text-muted">
                   {events.length} event{events.length !== 1 ? 's' : ''}
                 </span>
               )}
+              */}
             </div>
           </div>
           
@@ -251,6 +375,7 @@ const ProjectTaskCard = ({
         </div>
 
         {/* Progress bar */}
+        {/* 
         <div className="progress-container">
           <div className="progress-bar">
             <div 
@@ -265,6 +390,7 @@ const ProjectTaskCard = ({
             {Math.round(progressPercentage)}%
           </span>
         </div>
+        */}
       </div>
 
       {/* Task list - Implements D10 */}

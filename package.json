@@ -4,9 +4,10 @@
   "description": "A task management and long-term time management tool",
   "main": "server/index.js",
   "scripts": {
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "dev": "concurrently \"npm run py\" \"npm run client\"",
     "server": "nodemon server/index.js",
     "client": "cd client && npm start",
+    "py": "python3 server/cic.py",
     "build": "cd client && npm run build",
     "start": "node server/index.js",
     "install-all": "npm install && cd client && npm install"
