@@ -9,6 +9,7 @@ import ThemeToggle from './components/ThemeToggle';
 import Sidebar from './components/Sidebar';
 import { apiService } from './services/api';
 import './App.css';
+import { PROJECTS_LIMIT } from './components/HeatmapCalendar';
 
 function App() {
   // State management for all entities - Implements requirements R1-R16
@@ -61,8 +62,15 @@ function App() {
       // Then load tasks and events for each project
       const allTasks = [];
       const allEvents = [];
+
+      let index = 0;
       
+      //PARTIAL SOLUTION - IMPLEMENT WITH DATES
       for (const project of projectsData) {
+        console.log(project.order)
+        project.order = index;
+        console.log(project.order)
+        index++;
         try {
           const projectTasks = await apiService.getTasks(project.id);
           const projectEvents = await apiService.getEvents(project.id);
@@ -90,7 +98,7 @@ function App() {
     try {
       // Check if there are already 6 visible projects
       const visibleProjects = projects.filter(p => !p.hidden);
-      const shouldHideNewProject = visibleProjects.length >= 6;
+      const shouldHideNewProject = visibleProjects.length >= PROJECTS_LIMIT;
       
       // Separate deadline data from project data
       const { deadline, ...pureProjectData } = projectData;

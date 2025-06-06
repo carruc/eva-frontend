@@ -6,6 +6,8 @@ import { dataUtils } from '../services/api';
 import EventCard from './EventCard';
 import './HeatmapCalendar.css';
 
+export const PROJECTS_LIMIT = 8;
+
 // Implements requirements R14, R15, D1-D8
 const HeatmapCalendar = ({
   projects,
@@ -74,7 +76,7 @@ const HeatmapCalendar = ({
     const maxColumns = Math.floor(availableSpaceForDates / minColumnWidth);
     
     // Return the calculated number, with reasonable bounds
-    return Math.max(Math.min(maxColumns, 100), 15); // Min 15, Max 100 columns
+    return Math.max(Math.min(maxColumns, 200), 15); // Min 15, Max 100 columns
   }, [sidebarCollapsed]);
 
   // Use the calculated number of days that fit in the visible area
@@ -188,15 +190,18 @@ const HeatmapCalendar = ({
   // Handle project order changes - Implements D8
   const handleMoveProject = async (projectId, direction) => {
     const project = projects.find(p => p.id === projectId);
+    console.log('AAAAAA');
     if (!project) return;
-
+    
     const currentOrder = project.order;
     const newOrder = direction === 'up' ? currentOrder - 1 : currentOrder + 1;
-    
+    console.log('oldposition: %d', currentOrder);
+    console.log('newposition: %d', newOrder);
     // Find the project to swap with
     const targetProject = projects.find(p => p.order === newOrder);
     if (!targetProject) return;
-
+    
+    
     // Swap orders
     await onProjectUpdate(projectId, { order: newOrder });
     await onProjectUpdate(targetProject.id, { order: currentOrder });
@@ -209,7 +214,7 @@ const HeatmapCalendar = ({
       // If we're trying to show a hidden project, check the 6-project limit
       if (project.hidden) {
         const visibleProjects = projects.filter(p => !p.hidden);
-        if (visibleProjects.length >= 6) {
+        if (visibleProjects.length >= PROJECTS_LIMIT) {
           // Don't show the project and display an error message
           alert('You can only have 6 visible projects at a time. Please hide another project first.');
           return;
@@ -749,9 +754,11 @@ const ProjectRow = ({
             events: [],
             color: 'transparent'
           };
-
+          //HERE is probably where we need to fix the outline shi
           const hasDeadline = cellData.events.some(e => e.type === 'deadline');
+
           const hasMilestone = cellData.events.some(e => e.type === 'milestone');
+
           const today = new Date();
           const isPastDate = date < today && date.toDateString() !== today.toDateString();
 

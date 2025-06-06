@@ -388,9 +388,14 @@ export const dataUtils = {
     const projectTasks = this.getProjectTasks(tasks, projectId);
     return projectTasks.filter(task => {
       if (!task.completed) return false;
-      const taskDate = new Date(task.createdAt).toDateString();
+      
+      // For backward compatibility: use completedAt if available, otherwise fall back to createdAt
+      const completionDate = task.completedAt || task.createdAt;
+      if (!completionDate) return false;
+      
+      const taskCompletionDate = new Date(completionDate).toDateString();
       const targetDate = new Date(date).toDateString();
-      return taskDate === targetDate;
+      return taskCompletionDate === targetDate;
     }).length;
   },
 

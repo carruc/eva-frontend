@@ -58,6 +58,7 @@ export const ProjectType = {
     projectId: 'string',
     completed: 'boolean',
     createdAt: 'string',
+    completedAt: 'string|null',
     eventId: 'string|null',
     description: 'string|null',
     event: 'object|null'
