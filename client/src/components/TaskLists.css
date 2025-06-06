@@ -2,10 +2,10 @@
 .task-lists {
   display: flex;
   flex-direction: column;
-  padding: var(--spacing-lg);
   /* Make task lists take full height and enable scrolling */
   height: 100%;
   overflow: hidden;
+  padding: var(--spacing-lg);
 }
 
 .task-lists-wrapper {
@@ -22,16 +22,15 @@
   flex-direction: column;
   flex: 1;
   min-height: 0;
+  max-height: 100%; /* Ensure container doesn't exceed parent */
 }
 
 .task-lists-content {
-  display: flex;
-  gap: var(--spacing-lg);
-  align-items: flex-start;
+  display: block; /* Changed from flex to block for better grid support */
   /* Let it grow naturally, no initial max-height */
   overflow-y: visible; /* Start with no scrolling */
   overflow-x: hidden;
-  padding: var(--spacing-xs) 0;
+  padding: var(--spacing-xs) var(--spacing-md) var(--spacing-xs) 0;
   scrollbar-width: thin;
   scrollbar-color: var(--border) transparent;
   -webkit-overflow-scrolling: touch;
@@ -39,8 +38,9 @@
   scroll-behavior: smooth;
   scroll-padding-top: 20px;
   scroll-padding-bottom: 20px;
-  /* Add space on the right to avoid scrollbar being too close to content */
-  padding-right: var(--spacing-md);
+  /* Ensure proper flex behavior */
+  flex: 1;
+  min-height: 0;
 }
 
 /* When content is empty or short, hide scrollbars */
@@ -125,14 +125,16 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: var(--spacing-lg);
-  flex: 1;
   /* Ensure grid works properly in scrollable container */
-  min-height: min-content;
   align-content: start;
   /* Prevent cards from stretching vertically */
   align-items: start;
   /* Ensure grid can grow to trigger scrolling */
   width: 100%;
+  /* Add proper margin for scrollable content */
+  padding: var(--spacing-xs) 0;
+  /* Ensure grid has proper height behavior */
+  min-height: min-content;
 }
 
 /* Individual project task card */
@@ -785,6 +787,8 @@
   /* Ensure long content doesn't break layout */
   min-width: 0;
   overflow: hidden;
+  /* Ensure proper background in dark mode */
+  background-color: var(--surface);
 }
 
 .event-option:hover {
@@ -839,11 +843,36 @@
   font-size: 0.8rem;
   font-weight: 500;
   color: var(--text-primary);
+  background-color: var(--surface);
   line-height: 1.2;
   /* Add text truncation for long event names */
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* Ensure dark mode compatibility with higher specificity */
+[data-theme="dark"] .event-option .event-name {
+  color: var(--text-primary);
+}
+
+.inline-task-creator .event-option .event-name {
+  color: var(--text-primary);
+}
+
+/* Additional dark mode overrides for inline task creator */
+[data-theme="dark"] .inline-task-creator .event-option {
+  background-color: var(--surface);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .inline-task-creator .event-option:hover {
+  background-color: var(--surface-hover);
+}
+
+[data-theme="dark"] .inline-task-creator .event-option.selected {
+  background-color: var(--primary-color-alpha);
+  color: var(--text-primary);
 }
 
 .event-type-badge {

@@ -397,7 +397,7 @@ const ProjectTaskCard = ({
       <div className="card-body">
         {/* Uncompleted tasks - always shown */}
         <div className="task-section">
-          {uncompletedTasks.length > 0 ? (
+          {uncompletedTasks.length > 0 && (
             <div className="task-list">
               {uncompletedTasks.map(task => (
                 <TaskItem
@@ -408,10 +408,6 @@ const ProjectTaskCard = ({
                   onDelete={() => onTaskDelete(task.id)}
                 />
               ))}
-            </div>
-          ) : (
-            <div className="empty-state">
-              <p className="text-muted">No pending tasks</p>
             </div>
           )}
 
