@@ -29,7 +29,6 @@ const HeatmapCalendar = ({
   sidebarCollapsed = false
 }) => {
   const [daysToShow, setDaysToShow] = useState(51); // Simple fixed value for now
-  const [hoveredCell, setHoveredCell] = useState(null);
   const [contextMenu, setContextMenu] = useState(null);
   const [isCustomTimeScale, setIsCustomTimeScale] = useState(false);
   const [showEventCard, setShowEventCard] = useState(false);
@@ -243,7 +242,8 @@ const HeatmapCalendar = ({
       y: e.clientY,
       project,
       date,
-      events: cellEvents
+      events: cellEvents,
+      data: heatmapData[project.id]?.[date.toISOString()]
     });
   };
 
@@ -603,30 +603,12 @@ const HeatmapCalendar = ({
             onEdit={() => onProjectEdit(project)}
             onDelete={() => onProjectDelete(project.id)}
             onCellContextMenu={handleCellContextMenu}
-            onCellHover={setHoveredCell}
             onEventEdit={onEventEdit}
             events={dataUtils.getProjectEvents(events, project.id)}
             showEventTitles={showEventTitles}
             isCompactView={isCompactView}
           />
         ))}
-
-        {/* Hidden projects bar - Implements D7 */}
-        {hiddenProjects.length > 0 && (
-          <div className="hidden-projects-bar">
-            <span className="text-muted">Hidden projects:</span>
-            {hiddenProjects.map(project => (
-              <button
-                key={project.id}
-                className="btn btn-ghost btn-sm"
-                onClick={() => handleToggleHidden(project.id)}
-                style={{ color: project.color }}
-              >
-                {project.name}
-              </button>
-            ))}
-          </div>
-        )}
 
         {/* Action buttons */}
         <div className="heatmap-action-buttons" style={{ position: 'relative' }}>
@@ -636,6 +618,24 @@ const HeatmapCalendar = ({
           >
             + New Project
           </button>
+          
+          {/* Hidden projects bar - moved between buttons */}
+          {hiddenProjects.length > 0 && (
+            <div className="hidden-projects-bar">
+              <span className="text-muted">Hidden projects:</span>
+              {hiddenProjects.map(project => (
+                <button
+                  key={project.id}
+                  className="btn btn-ghost btn-sm"
+                  onClick={() => handleToggleHidden(project.id)}
+                  style={{ color: project.color }}
+                >
+                  {project.name}
+                </button>
+              ))}
+            </div>
+          )}
+          
           <button 
             className="btn btn-secondary btn-event"
             ref={newEventButtonRef}
@@ -643,11 +643,6 @@ const HeatmapCalendar = ({
           >
             + New Event
           </button>
-          
-          {/* Tooltip for hovered cell */}
-          {hoveredCell && (
-            <CellTooltip hoveredCell={hoveredCell} />
-          )}
         </div>
       </div>
 
@@ -687,7 +682,6 @@ const ProjectRow = ({
   onEdit,
   onDelete,
   onCellContextMenu,
-  onCellHover,
   onEventEdit,
   events,
   showEventTitles,
@@ -768,12 +762,6 @@ const ProjectRow = ({
               className={`heatmap-cell ${hasDeadline ? 'has-deadline' : ''} ${hasMilestone ? 'has-milestone' : ''} ${isPastDate ? 'past-date' : ''}`}
               style={hasDeadline ? { '--deadline-color': project.color } : {}}
               onContextMenu={(e) => onCellContextMenu(e, project, date)}
-              onMouseEnter={() => onCellHover({
-                project,
-                date,
-                data: cellData
-              })}
-              onMouseLeave={() => onCellHover(null)}
               title={`${project.name} - ${dataUtils.formatDate(date)}: ${cellData.completedTasks} tasks completed`}
             >
               {/* Rounded square indicator for heatmap intensity */}
@@ -825,7 +813,7 @@ const ProjectRow = ({
 
 // Context menu component
 const ContextMenu = ({ contextMenu, onEventEdit, onEventDelete, onClose }) => {
-  const { x, y, project, date, events } = contextMenu;
+  const { x, y, project, date, events, data } = contextMenu;
 
   return (
     <div
@@ -838,9 +826,7 @@ const ContextMenu = ({ contextMenu, onEventEdit, onEventDelete, onClose }) => {
       }}
     >
       <div className="context-menu-header">
-        <strong>{project.name}</strong>
-        <br />
-        <span className="text-muted">{dataUtils.formatDate(date, 'long')}</span>
+        <span className="text-muted">{dataUtils.formatDate(date, 'long')}, {data?.completedTasks || 0} tasks completed</span>
       </div>
       
       {events.length > 0 && (
@@ -876,17 +862,6 @@ const ContextMenu = ({ contextMenu, onEventEdit, onEventDelete, onClose }) => {
           ))}
         </div>
       )}
-    </div>
-  );
-};
-
-// Cell tooltip component
-const CellTooltip = ({ hoveredCell }) => {
-  const { project, date, data } = hoveredCell;
-
-  return (
-    <div className="cell-tooltip">
-      {dataUtils.formatDate(date, 'long')}, <strong style={{ color: project.color }}>{project.name}</strong>, {data.completedTasks} tasks completed
     </div>
   );
 };

@@ -17,6 +17,14 @@
   pointer-events: auto;
 }
 
+/* Left controls container for sidebar expand and quick nav */
+.page-overlay-left-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
 /* Sidebar expand button styling - positioned on the left */
 .page-overlay-sidebar-btn {
   width: 2rem;
@@ -31,7 +39,7 @@
   justify-content: center;
   transition: all 0.3s ease;
   box-shadow: var(--shadow-lg);
-  opacity: 0.6;
+  opacity: 0.3;
   /* Ensure it stays on the left */
   margin-right: auto;
 }
@@ -43,9 +51,53 @@
   opacity: 1;
 }
 
+/* Quick navigation buttons container */
+.quick-nav-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+.quick-nav-buttons.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* Individual quick navigation button */
+.quick-nav-btn {
+  width: 2rem;
+  height: 2rem;
+  margin-bottom: 0.25rem;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-lg);
+  opacity: 0.3;
+  font-size: 0.875rem;
+}
+
+.quick-nav-btn:hover {
+  background-color: var(--surface-hover);
+  border-color: var(--text-muted);
+  color: var(--text-primary);
+  opacity: 1;
+  transform: translateX(2px);
+}
+
 /* Theme toggle button styling - positioned on the right */
 .page-overlay-theme-btn {
-  opacity: 0.6;
+  opacity: 0.3;
   transition: opacity 0.3s ease;
   box-shadow: var(--shadow-lg);
   /* Ensure it stays on the right */
@@ -62,14 +114,15 @@
     padding: 1rem;
   }
   
-  .page-overlay-sidebar-btn {
+  .page-overlay-sidebar-btn,
+  .quick-nav-btn {
     width: 1.75rem;
     height: 1.75rem;
-    opacity: 0.7;
+    opacity: 0.35;
   }
   
   .page-overlay-theme-btn {
-    opacity: 0.7;
+    opacity: 0.35;
   }
 }
 
@@ -79,7 +132,8 @@
   }
   
   .page-overlay-sidebar-btn,
+  .quick-nav-btn,
   .page-overlay-theme-btn {
-    opacity: 0.8;
+    opacity: 0.4;
   }
 } 

@@ -27,7 +27,7 @@ const Planning = ({
   onTaskToggle
 }) => {
   return (
-    <div className="planning">
+    <div className={`planning ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
       {/* Upper part: Heatmap Calendar */}
       <section className="planning-heatmap-section">
         <HeatmapCalendar

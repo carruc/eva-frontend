@@ -128,6 +128,8 @@
   padding: var(--spacing-xs) var(--spacing-sm);
   font-size: 0.875rem;
   min-height: 32px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px); /* Safari support */
 }
 
 .timescale-control {
@@ -163,6 +165,8 @@
   transition: all 0.2s ease;
   white-space: nowrap;
   font-weight: 500;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px); /* Safari support */
 }
 
 .timescale-btn:hover {
@@ -453,6 +457,8 @@
   justify-content: center;
   opacity: 0.7;
   transition: opacity 0.2s ease, background-color 0.2s ease;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px); /* Safari support */
 }
 
 .move-buttons-stack button:hover {
@@ -470,6 +476,8 @@
   justify-content: center;
   opacity: 0.7;
   transition: opacity 0.2s ease, background-color 0.2s ease;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px); /* Safari support */
 }
 
 .heatmap-project-actions-right > button:hover {
@@ -577,35 +585,54 @@
 
 /* Hidden projects bar */
 .hidden-projects-bar {
-  margin-top: 8px;
-  padding: var(--spacing-sm) var(--spacing-md);
-  background-color: var(--surface-hover);
+  min-height: 32px;
+  height: 32px;
+  box-sizing: border-box;
+  padding: 0 var(--spacing-md) 0 var(--spacing-md);
+  background-color: rgba(0, 0, 0, 0.05); /* Very transparent black for light theme */
   border: 1px solid var(--border);
   border-radius: var(--radius);
   display: inline-flex;
   gap: var(--spacing-xs);
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap; /* Prevent wrapping to enable scrolling */
   font-size: 0.75rem;
   opacity: 0.8;
-  width: fit-content;
+  width: auto; /* Let it size to content */
   max-width: 100%;
+}
+
+/* Dark theme override */
+[data-theme="dark"] .hidden-projects-bar {
+  background-color: rgba(255, 255, 255, 0.05); /* Very transparent white for dark theme */
+}
+
+/* Hide scrollbar for WebKit browsers */
+.heatmap-action-buttons .hidden-projects-bar::-webkit-scrollbar {
+  display: none;
 }
 
 /* Context menu */
 .context-menu {
-  background-color: var(--surface);
+  background-color: rgba(0, 0, 0, 0.05); /* Very transparent black for light theme - matches hidden-projects-bar */
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  box-shadow: var(--shadow-lg);
-  min-width: 200px;
+  min-width: 100px;
   animation: fadeIn 0.2s ease-out;
+  font-size: 0.75rem; /* Smaller font like hidden-projects-bar */
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px); /* Safari support */
+}
+
+[data-theme="dark"] .context-menu {
+  background-color: rgba(255, 255, 255, 0.05); /* Very transparent white for dark theme - matches hidden-projects-bar */
 }
 
 .context-menu-header {
-  padding: var(--spacing-md);
+  padding: var(--spacing-xs);
   border-bottom: 1px solid var(--border);
-  background-color: var(--surface-hover);
+  background-color: transparent;
+  font-size: 0.75rem; /* Ensure header text is also smaller */
 }
 
 .context-menu-section {
@@ -961,20 +988,40 @@
   padding: var(--spacing-lg);
   border-top: none;
   background-color: transparent;
-  display: grid;
-  grid-template-columns: 250px 1fr;
-  gap: var(--spacing-md);
+  display: flex;
+  flex-direction: row;
   align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
 }
 
 .heatmap-action-buttons .btn-project {
-  justify-self: start;
   min-width: 140px;
+  order: 1;
+}
+
+.heatmap-action-buttons .hidden-projects-bar {
+  flex: 0 1 auto; /* Don't grow, can shrink, auto basis */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  order: 2;
+  max-width: 1200px; /* Limit maximum width */
+  min-width: 100px; /* Minimum width to prevent collapse */
+  overflow-x: auto; /* Enable horizontal scrolling */
+  overflow-y: hidden; /* Prevent vertical scrolling */
+  scrollbar-width: none; /* Hide scrollbar for Firefox */
+  -ms-overflow-style: none; /* Hide scrollbar for IE/Edge */
+}
+
+/* Hide scrollbar for WebKit browsers */
+.heatmap-action-buttons .hidden-projects-bar::-webkit-scrollbar {
+  display: none;
 }
 
 .heatmap-action-buttons .btn-event {
-  justify-self: end;
   min-width: 140px;
+  order: 3;
 }
 
 /* Rounded square for heatmap intensity */
@@ -1042,4 +1089,10 @@
 
 .heatmap-project-events-count {
   font-size: 0.75rem;
+}
+
+.heatmap-action-buttons .btn-project,
+.heatmap-action-buttons .btn-event {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px); /* Safari support */
 } 

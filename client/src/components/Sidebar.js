@@ -44,6 +44,11 @@ const Sidebar = ({ isCollapsed, onToggle, projects = [], onNewProject }) => {
 
   const handleItemClick = (itemPath) => {
     navigate(itemPath);
+    
+    // Auto-collapse sidebar when navigating to a project page
+    if (itemPath.startsWith('/project/')) {
+      onToggle(); // Collapse the sidebar
+    }
   };
 
   const filteredProjects = projects.filter(project =>

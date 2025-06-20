@@ -305,6 +305,8 @@
   align-items: center;
   justify-content: center;
   gap: var(--spacing-xs);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px); /* Safari support */
 }
 
 .event-card .btn-primary {

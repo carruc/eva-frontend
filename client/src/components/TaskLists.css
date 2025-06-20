@@ -6,6 +6,7 @@
   height: 100%;
   overflow: hidden;
   padding: var(--spacing-lg);
+  padding-left: calc(var(--spacing-lg) + 1em); /* Add 1em to left margin */
 }
 
 .task-lists-wrapper {
@@ -382,6 +383,8 @@
 
 .task-actions button {
   padding: var(--spacing-xs);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px); /* Safari support */
 }
 
 /* Card footer with new layout */
@@ -405,6 +408,8 @@
   font-weight: 500;
   min-width: auto;
   width: auto;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px); /* Safari support */
 }
 
 /* Card hover actions - appear on hover in bottom right */
@@ -425,6 +430,8 @@
   padding: var(--spacing-xs);
   opacity: 0.7;
   transition: opacity 0.2s ease, background-color 0.2s ease;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px); /* Safari support */
 }
 
 .card-hover-actions button:hover {
@@ -940,6 +947,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px); /* Safari support */
 }
 
 .task-creator-ok:hover:not(:disabled) {
@@ -960,6 +969,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px); /* Safari support */
 }
 
 @keyframes fadeInUp {
