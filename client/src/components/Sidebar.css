@@ -13,34 +13,6 @@
   box-shadow: var(--shadow-md);
 }
 
-/* Expand button when sidebar is collapsed */
-.sidebar-expand-button {
-  position: fixed;
-  top: 1.5rem;
-  left: 1.5rem;
-  width: 2rem;
-  height: 2rem;
-  background: none;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  color: var(--text-secondary);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1001;
-  transition: all 0.3s ease;
-  box-shadow: var(--shadow-lg);
-  opacity: 0.6;
-}
-
-.sidebar-expand-button:hover {
-  background-color: var(--surface-hover);
-  border-color: var(--text-muted);
-  color: var(--text-primary);
-  opacity: 1;
-}
-
 /* Sidebar overlay for mobile */
 .sidebar-overlay {
   position: fixed;
@@ -549,22 +521,10 @@
     width: 280px;
     box-shadow: var(--shadow-xl);
   }
-  
-  .sidebar-expand-button {
-    top: 1rem;
-    left: 1rem;
-    width: 1.75rem;
-    height: 1.75rem;
-    opacity: 0.7;
-  }
 }
 
 @media (max-width: 480px) {
-  .sidebar-expand-button {
-    top: 0.75rem;
-    left: 0.75rem;
-    opacity: 0.8;
-  }
+  /* No additional styles needed */
 }
 
 /* Animation for nav items */

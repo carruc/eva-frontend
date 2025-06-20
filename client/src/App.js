@@ -5,8 +5,8 @@ import Planning from './pages/Planning';
 import Project from './pages/Project';
 import ProjectModal from './components/ProjectModal';
 import EventModal from './components/EventModal';
-import ThemeToggle from './components/ThemeToggle';
 import Sidebar from './components/Sidebar';
+import PageOverlay from './components/PageOverlay';
 import { apiService } from './services/api';
 import './App.css';
 import { PROJECTS_LIMIT } from './components/HeatmapCalendar';
@@ -408,8 +408,11 @@ function App() {
             </Routes>
           </main>
 
-          {/* Floating Theme Toggle */}
-          <ThemeToggle className="floating-theme-toggle" />
+          {/* Page overlay with sidebar expand and theme toggle buttons */}
+          <PageOverlay 
+            sidebarCollapsed={sidebarCollapsed}
+            onToggleSidebar={handleToggleSidebar}
+          />
         </div>
 
         {/* Modals */}

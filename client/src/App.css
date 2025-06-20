@@ -65,21 +65,6 @@
   background-color: rgba(255, 255, 255, 0.1);
 }
 
-/* Floating Theme Toggle */
-.floating-theme-toggle {
-  position: fixed;
-  top: 1.5rem;
-  right: 1.5rem;
-  z-index: 1000;
-  opacity: 0.6;
-  transition: opacity 0.3s ease;
-  box-shadow: var(--shadow-lg);
-}
-
-.floating-theme-toggle:hover {
-  opacity: 1;
-}
-
 /* Main content area - simplified for page-based routing */
 .app-main {
   flex: 1;
@@ -138,12 +123,6 @@
     margin-left: 0;
   }
   
-  .floating-theme-toggle {
-    top: 1rem;
-    right: 1rem;
-    opacity: 0.7;
-  }
-  
   .error-banner {
     padding: var(--spacing-md);
     font-size: 0.875rem;
@@ -151,9 +130,8 @@
 }
 
 @media (max-width: 480px) {
-  .floating-theme-toggle {
-    top: 0.75rem;
-    right: 0.75rem;
-    opacity: 0.8;
+  .error-banner {
+    padding: var(--spacing-md);
+    font-size: 0.875rem;
   }
 } 

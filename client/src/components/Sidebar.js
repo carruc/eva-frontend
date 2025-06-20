@@ -148,15 +148,7 @@ const Sidebar = ({ isCollapsed, onToggle, projects = [], onNewProject }) => {
   };
 
   if (isCollapsed) {
-    return (
-      <button 
-        className="sidebar-expand-button"
-        onClick={onToggle}
-        aria-label="Expand sidebar"
-      >
-        <FontAwesomeIcon icon={faAngleRight} />
-      </button>
-    );
+    return null; // Don't render anything when collapsed - PageOverlay handles the expand button
   }
 
   return (

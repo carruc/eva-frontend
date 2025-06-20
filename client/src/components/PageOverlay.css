@@ -1,0 +1,85 @@
+/* Page Overlay - Container for consistent page-level controls */
+.page-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1001;
+  pointer-events: none; /* Allow clicks to pass through the container */
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1.5rem;
+}
+
+/* Enable pointer events for individual buttons */
+.page-overlay > * {
+  pointer-events: auto;
+}
+
+/* Sidebar expand button styling - positioned on the left */
+.page-overlay-sidebar-btn {
+  width: 2rem;
+  height: 2rem;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-lg);
+  opacity: 0.6;
+  /* Ensure it stays on the left */
+  margin-right: auto;
+}
+
+.page-overlay-sidebar-btn:hover {
+  background-color: var(--surface-hover);
+  border-color: var(--text-muted);
+  color: var(--text-primary);
+  opacity: 1;
+}
+
+/* Theme toggle button styling - positioned on the right */
+.page-overlay-theme-btn {
+  opacity: 0.6;
+  transition: opacity 0.3s ease;
+  box-shadow: var(--shadow-lg);
+  /* Ensure it stays on the right */
+  margin-left: auto;
+}
+
+.page-overlay-theme-btn:hover {
+  opacity: 1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .page-overlay {
+    padding: 1rem;
+  }
+  
+  .page-overlay-sidebar-btn {
+    width: 1.75rem;
+    height: 1.75rem;
+    opacity: 0.7;
+  }
+  
+  .page-overlay-theme-btn {
+    opacity: 0.7;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-overlay {
+    padding: 0.75rem;
+  }
+  
+  .page-overlay-sidebar-btn,
+  .page-overlay-theme-btn {
+    opacity: 0.8;
+  }
+} 
