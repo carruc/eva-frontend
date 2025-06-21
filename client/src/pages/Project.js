@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
-import { apiService } from '../services/api';
+import { apiService, dataUtils } from '../services/api';
+import ProjectFiles from '../components/ProjectFiles';
 import './Project.css';
 
-const Project = () => {
+const Project = ({ events }) => {
   const { projectId } = useParams();
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -26,6 +27,13 @@ const Project = () => {
       setLoading(false);
     }
   };
+
+  const daysUntilDeadline = useMemo(() => {
+    if (!events || !project) return null;
+    const deadline = dataUtils.getProjectDeadline(events, project.id);
+    if (!deadline) return null;
+    return dataUtils.daysUntil(deadline.date);
+  }, [events, project]);
 
   const handleLearningSession = () => {
     // TODO: Implement learning session functionality
@@ -65,18 +73,28 @@ const Project = () => {
   return (
     <div className="project-page">
       <div className="project-header">
+        {daysUntilDeadline !== null && (
+          <div className="deadline-indicator">
+            Deadline in {daysUntilDeadline} {daysUntilDeadline === 1 ? 'day' : 'days'}.
+          </div>
+        )}
         <h1 className="project-title">{project.name}</h1>
       </div>
       
       <div className="project-content">
-        <div className="project-center">
+        {/* Project content will be mostly empty, letting the drawer take space */}
+      </div>
+
+      <div className="project-bottom-container">
+        <div className="project-actions-container">
           <button 
             className="btn btn-primary btn-pill learning-session-btn"
             onClick={handleLearningSession}
           >
-            learning session
+            Start Learning Session
           </button>
         </div>
+        <ProjectFiles project={project} />
       </div>
     </div>
   );

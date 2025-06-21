@@ -31,6 +31,7 @@
   --surface: #ffffff;
   --surface-hover: var(--lightgray);
   --border: var(--gray);
+  --project-folder-background: var(--surface);
   --border-light: var(--lightgray);
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
@@ -45,6 +46,8 @@
 
   /* Component sizes */
   --header-height: 80px;
+  --project-drawer-collapsed-height: 90px;
+  --project-drawer-expanded-height: 50vh;
 
   /* Past date specific colors */
   --past-date-bg: var(--surface-hover);
@@ -81,6 +84,7 @@
   --surface: var(--lightgray);
   --surface-hover: #4a474a;
   --border: var(--gray);
+  --project-folder-background: #222222;
   --border-light: var(--lightgray);
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.2);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.2);
