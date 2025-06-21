@@ -1,39 +1,52 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { apiService, dataUtils } from '../services/api';
+import { apiService } from '../services/api';
 import ProjectFiles from '../components/ProjectFiles';
 import './Project.css';
+import { differenceInDays, isPast, isToday, startOfDay } from 'date-fns';
 
-const Project = ({ events }) => {
+const Project = () => {
   const { projectId } = useParams();
   const [project, setProject] = useState(null);
+  const [deadlineText, setDeadlineText] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    loadProject();
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        const projectData = await apiService.getProject(projectId);
+        setProject(projectData);
+
+        const eventData = await apiService.getEvents(projectId);
+        
+        const deadlineEvent = eventData.find(e => e.type === 'deadline');
+        if (deadlineEvent) {
+          const deadlineDate = new Date(deadlineEvent.date);
+          const today = new Date();
+          
+          if (isPast(deadlineDate) && !isToday(deadlineDate)) {
+            setDeadlineText('Deadline has passed');
+          } else if (isToday(deadlineDate)) {
+            setDeadlineText('Deadline is today');
+          } else {
+            const daysRemaining = differenceInDays(startOfDay(deadlineDate), startOfDay(today));
+            setDeadlineText(daysRemaining === 1 ? 'Deadline in 1 day' : `Deadline in ${daysRemaining} days`);
+          }
+        }
+        
+        setError(null);
+      } catch (err) {
+        setError('Failed to load project data. Please try again.');
+        console.error('Error loading project data:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadData();
   }, [projectId]);
-
-  const loadProject = async () => {
-    try {
-      setLoading(true);
-      const projectData = await apiService.getProject(projectId);
-      setProject(projectData);
-      setError(null);
-    } catch (err) {
-      setError('Failed to load project. Please try again.');
-      console.error('Error loading project:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const daysUntilDeadline = useMemo(() => {
-    if (!events || !project) return null;
-    const deadline = dataUtils.getProjectDeadline(events, project.id);
-    if (!deadline) return null;
-    return dataUtils.daysUntil(deadline.date);
-  }, [events, project]);
 
   const handleLearningSession = () => {
     // TODO: Implement learning session functionality
@@ -73,12 +86,8 @@ const Project = ({ events }) => {
   return (
     <div className="project-page">
       <div className="project-header">
-        {daysUntilDeadline !== null && (
-          <div className="deadline-indicator">
-            Deadline in {daysUntilDeadline} {daysUntilDeadline === 1 ? 'day' : 'days'}.
-          </div>
-        )}
         <h1 className="project-title">{project.name}</h1>
+        {deadlineText && <span className="deadline-text">{deadlineText}</span>}
       </div>
       
       <div className="project-content">

@@ -552,21 +552,6 @@ export const dataUtils = {
     return deadlineDate < now;
   },
 
-  // Calculate days until a date
-  daysUntil(dateString) {
-    const targetDate = new Date(dateString);
-    const now = new Date();
-    // Reset time part to compare dates only
-    now.setHours(0, 0, 0, 0);
-    targetDate.setHours(0, 0, 0, 0);
-
-    const diffTime = targetDate - now;
-    if (diffTime < 0) return null; // Date is in the past
-    
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays;
-  },
-
   // Validate task assignment to event
   validateTaskEventAssignment(task, event) {
     if (!event) return true; // No event assignment is valid

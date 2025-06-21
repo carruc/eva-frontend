@@ -461,7 +461,7 @@ function App() {
               />
               <Route 
                 path="/project/:projectId" 
-                element={<Project events={events} />} 
+                element={<Project />} 
               />
             </Routes>
           </main>

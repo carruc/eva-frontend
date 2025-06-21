@@ -1,0 +1,182 @@
+/* Project Page Styles */
+.project-page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--background);
+  overflow: auto;
+  padding: 4.8em 8.8em; /* Default padding for collapsed state */
+  transition: padding 0.3s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.app-layout.sidebar-expanded .project-page {
+  padding: 4.8em; /* Padding for expanded state */
+}
+
+/* Project header with left-aligned title */
+.project-header {
+  display: flex;
+  align-items: baseline; /* Align text based on their baseline */
+  justify-content: flex-start;
+  gap: var(--spacing-md); /* Add space between title and deadline text */
+  flex-shrink: 0;
+  margin-top: 1em;
+}
+
+.project-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: left;
+}
+
+.deadline-text {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.app-layout.sidebar-collapsed .project-title {
+  margin-left: 0;
+}
+
+/* Project content area */
+.project-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  width: 100%;
+  position: relative;
+}
+
+/* Center container for the button */
+.project-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.project-bottom-container {
+  position: fixed;
+  bottom: 0;
+  z-index: 1001;
+
+  /* Horizontal alignment for the entire container */
+  left: 8.8em;
+  right: 8.8em;
+  
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end; /* Align button to the right */
+  gap: var(--spacing-lg); /* This is the guaranteed space */
+
+  /* Match drawer transitions */
+  transition: left 0.3s cubic-bezier(0.2, 0, 0, 1), right 0.3s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.app-layout.sidebar-expanded .project-bottom-container {
+  left: calc(280px + 3.6em);
+  right: 4.8em;
+}
+
+@media (max-width: 1024px) {
+  .app-layout.sidebar-expanded .project-bottom-container {
+    left: calc(260px + 3.6em);
+    right: 4.8em;
+  }
+}
+
+/* Remove positioning from the button container itself */
+.project-actions-container {
+  position: static;
+}
+
+/* Adjust button position when drawer is expanded */
+.project-files.expanded ~ .project-actions-container {
+  bottom: calc(var(--project-drawer-expanded-height) + var(--spacing-sm));
+}
+
+@media (max-width: 768px) {
+  .project-bottom-container {
+    left: 0;
+    right: 0;
+    align-items: center; /* Center button on mobile */
+  }
+}
+
+.learning-session-btn {
+  font-size: 1.5rem;
+  font-weight: 600;
+  padding: 16px 32px;
+  height: auto;
+  min-width: auto;
+  box-shadow: var(--shadow-lg);
+}
+
+.learning-session-btn:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+}
+
+.learning-session-btn:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-md);
+}
+
+/* Loading and error states */
+.project-loading,
+.project-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 1.125rem;
+}
+
+.project-error {
+  color: var(--error-color);
+}
+
+.project-loading p,
+.project-error p {
+  margin: 0;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .project-page {
+    padding: var(--spacing-md);
+  }
+  
+  .project-title {
+    font-size: 2rem;
+  }
+  
+  .learning-session-btn {
+    font-size: 1rem;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    min-width: 180px;
+    height: 48px;
+  }
+}
+
+@media (max-width: 480px) {
+  .project-page {
+    padding: var(--spacing-sm);
+  }
+  
+  .project-title {
+    font-size: 1.75rem;
+  }
+  
+  .learning-session-btn {
+    font-size: 0.95rem;
+    padding: var(--spacing-sm) var(--spacing-md);
+    min-width: 160px;
+    height: 44px;
+  }
+} 
