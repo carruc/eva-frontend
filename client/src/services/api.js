@@ -542,6 +542,16 @@ export const dataUtils = {
     return events.filter(e => e.projectId === projectId && e.type === 'milestone' && !e.isDeadline);
   },
 
+  // Check if project has overdue deadline
+  hasOverdueDeadline(events, projectId) {
+    const deadline = this.getProjectDeadline(events, projectId);
+    if (!deadline) return false;
+    
+    const deadlineDate = new Date(deadline.date);
+    const now = new Date();
+    return deadlineDate < now;
+  },
+
   // Validate task assignment to event
   validateTaskEventAssignment(task, event) {
     if (!event) return true; // No event assignment is valid

@@ -687,10 +687,12 @@ const ProjectRow = ({
   showEventTitles,
   isCompactView
 }) => {
+  // Check if project has overdue deadline
+  const isOverdue = dataUtils.hasOverdueDeadline(events, project.id);
 
   return (
     <>
-      <div className="heatmap-project-row" style={{ gridTemplateColumns }}>
+      <div className={`heatmap-project-row ${isOverdue ? 'project-overdue' : ''}`} style={{ gridTemplateColumns }}>
         {/* Project header */}
         <div 
           className="heatmap-project-header"

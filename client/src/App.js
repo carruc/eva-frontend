@@ -10,6 +10,7 @@ import PageOverlay from './components/PageOverlay';
 import { apiService } from './services/api';
 import './App.css';
 import { PROJECTS_LIMIT } from './components/HeatmapCalendar';
+import { dataUtils } from './services/api';
 
 function App() {
   // State management for all entities - Implements requirements R1-R16
@@ -63,14 +64,8 @@ function App() {
       const allTasks = [];
       const allEvents = [];
 
-      let index = 0;
-      
-      //PARTIAL SOLUTION - IMPLEMENT WITH DATES
+      // Load all events first to get deadline information
       for (const project of projectsData) {
-        console.log(project.order)
-        project.order = index;
-        console.log(project.order)
-        index++;
         try {
           const projectTasks = await apiService.getTasks(project.id);
           const projectEvents = await apiService.getEvents(project.id);
@@ -80,6 +75,68 @@ function App() {
           console.warn(`Failed to load data for project ${project.id}:`, err);
           // Continue loading other projects even if one fails
         }
+      }
+
+      // Order projects based on deadline proximity
+      const projectsWithDeadlines = [];
+      const projectsWithoutDeadlines = [];
+      const projectsWithOverdueDeadlines = [];
+
+      for (const project of projectsData) {
+        const deadline = dataUtils.getProjectDeadline(allEvents, project.id);
+        
+        if (deadline) {
+          // Project has a deadline - calculate days until deadline
+          const deadlineDate = new Date(deadline.date);
+          const now = new Date();
+          const daysUntilDeadline = Math.ceil((deadlineDate - now) / (1000 * 60 * 60 * 24));
+          
+          if (daysUntilDeadline < 0) {
+            // Deadline is overdue (in the past)
+            projectsWithOverdueDeadlines.push({
+              project,
+              deadline,
+              daysUntilDeadline: Math.abs(daysUntilDeadline) // Use absolute value for sorting
+            });
+          } else {
+            // Deadline is in the future
+            projectsWithDeadlines.push({
+              project,
+              deadline,
+              daysUntilDeadline
+            });
+          }
+        } else {
+          // Project has no deadline
+          projectsWithoutDeadlines.push(project);
+        }
+      }
+
+      // Sort projects with deadlines by proximity (closest first)
+      projectsWithDeadlines.sort((a, b) => a.daysUntilDeadline - b.daysUntilDeadline);
+      
+      // Sort overdue projects by how overdue they are (most overdue first)
+      projectsWithOverdueDeadlines.sort((a, b) => a.daysUntilDeadline - b.daysUntilDeadline);
+
+      // Assign order numbers: future deadlines first, then projects without deadlines, then overdue deadlines
+      let orderIndex = 0;
+      
+      // Assign order to projects with future deadlines (closest deadline gets lowest order)
+      for (const { project } of projectsWithDeadlines) {
+        project.order = orderIndex;
+        orderIndex++;
+      }
+      
+      // Assign order to projects without deadlines (maintain their original order)
+      for (const project of projectsWithoutDeadlines) {
+        project.order = orderIndex;
+        orderIndex++;
+      }
+      
+      // Assign order to projects with overdue deadlines (most overdue gets highest order)
+      for (const { project } of projectsWithOverdueDeadlines) {
+        project.order = orderIndex;
+        orderIndex++;
       }
       
       setTasks(allTasks);
@@ -349,6 +406,7 @@ function App() {
           isCollapsed={sidebarCollapsed}
           onToggle={handleToggleSidebar}
           projects={projects}
+          events={events}
           onNewProject={() => setShowProjectModal(true)}
         />
 

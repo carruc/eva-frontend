@@ -344,6 +344,21 @@
   font-size: inherit;
 }
 
+/* Overdue project styling */
+.project-item.project-overdue {
+  opacity: 0.5;
+  color: var(--text-muted);
+}
+
+.project-item.project-overdue:hover {
+  opacity: 0.7;
+  color: var(--text-secondary);
+}
+
+.project-item.project-overdue .project-color {
+  opacity: 0.6;
+}
+
 .no-projects {
   padding: var(--spacing-md);
   text-align: center;

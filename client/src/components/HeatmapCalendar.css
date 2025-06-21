@@ -347,6 +347,26 @@
 .heatmap-project-row {
   border-bottom: none;
   position: relative;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Overdue project row styling */
+.heatmap-project-row.project-overdue {
+  opacity: 0.6;
+  filter: grayscale(0.3);
+}
+
+.heatmap-project-row.project-overdue:hover {
+  opacity: 0.8;
+  filter: grayscale(0.1);
+}
+
+.heatmap-project-row.project-overdue .heatmap-project-name {
+  color: var(--text-muted);
+}
+
+.heatmap-project-row.project-overdue .heatmap-project-header::before {
+  opacity: 0.6;
 }
 
 .heatmap-project-header {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
@@ -11,9 +11,10 @@ import {
   faUser,
   faPlus
 } from '@fortawesome/free-solid-svg-icons';
+import { dataUtils } from '../services/api';
 import './Sidebar.css';
 
-const Sidebar = ({ isCollapsed, onToggle, projects = [], onNewProject }) => {
+const Sidebar = ({ isCollapsed, onToggle, projects = [], events = [], onNewProject }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isScrollable, setIsScrollable] = useState(false);
   const [scrollPosition, setScrollPosition] = useState({ top: false, bottom: false });
@@ -54,6 +55,56 @@ const Sidebar = ({ isCollapsed, onToggle, projects = [], onNewProject }) => {
   const filteredProjects = projects.filter(project =>
     project.name && project.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Apply deadline-based ordering to filtered projects (same logic as App.js)
+  const orderedFilteredProjects = useMemo(() => {
+    const projectsWithDeadlines = [];
+    const projectsWithoutDeadlines = [];
+    const projectsWithOverdueDeadlines = [];
+
+    for (const project of filteredProjects) {
+      const deadline = dataUtils.getProjectDeadline(events, project.id);
+      
+      if (deadline) {
+        // Project has a deadline - calculate days until deadline
+        const deadlineDate = new Date(deadline.date);
+        const now = new Date();
+        const daysUntilDeadline = Math.ceil((deadlineDate - now) / (1000 * 60 * 60 * 24));
+        
+        if (daysUntilDeadline < 0) {
+          // Deadline is overdue (in the past)
+          projectsWithOverdueDeadlines.push({
+            project,
+            deadline,
+            daysUntilDeadline: Math.abs(daysUntilDeadline) // Use absolute value for sorting
+          });
+        } else {
+          // Deadline is in the future
+          projectsWithDeadlines.push({
+            project,
+            deadline,
+            daysUntilDeadline
+          });
+        }
+      } else {
+        // Project has no deadline
+        projectsWithoutDeadlines.push(project);
+      }
+    }
+
+    // Sort projects with deadlines by proximity (closest first)
+    projectsWithDeadlines.sort((a, b) => a.daysUntilDeadline - b.daysUntilDeadline);
+    
+    // Sort overdue projects by how overdue they are (most overdue first)
+    projectsWithOverdueDeadlines.sort((a, b) => a.daysUntilDeadline - b.daysUntilDeadline);
+
+    // Return ordered projects: future deadlines first, then projects without deadlines, then overdue deadlines
+    return [
+      ...projectsWithDeadlines.map(({ project }) => project),
+      ...projectsWithoutDeadlines,
+      ...projectsWithOverdueDeadlines.map(({ project }) => project)
+    ];
+  }, [filteredProjects, events]);
 
   // Simple scroll state checker with hysteresis to prevent glitching
   const checkScrollState = useCallback(() => {
@@ -115,7 +166,7 @@ const Sidebar = ({ isCollapsed, onToggle, projects = [], onNewProject }) => {
     // Use a small timeout to ensure DOM has updated
     const timeoutId = setTimeout(checkScrollState, 10);
     return () => clearTimeout(timeoutId);
-  }, [filteredProjects, checkScrollState]);
+  }, [orderedFilteredProjects, checkScrollState]);
 
   // Check on window resize
   useEffect(() => {
@@ -221,21 +272,24 @@ const Sidebar = ({ isCollapsed, onToggle, projects = [], onNewProject }) => {
                   ref={projectsListRef}
                   onScroll={handleProjectsScroll}
                 >
-                  {filteredProjects.map((project) => (
-                    <button
-                      key={project.id}
-                      className="project-item"
-                      onClick={() => handleItemClick(`/project/${project.id}`)}
-                      title={project.name}
-                    >
-                      <span className="project-color" style={{ backgroundColor: project.color }}></span>
-                      <span className="project-name">{project.name}</span>
-                    </button>
-                  ))}
-                  {filteredProjects.length === 0 && searchTerm && (
+                  {orderedFilteredProjects.map((project) => {
+                    const isOverdue = dataUtils.hasOverdueDeadline(events, project.id);
+                    return (
+                      <button
+                        key={project.id}
+                        className={`project-item ${isOverdue ? 'project-overdue' : ''}`}
+                        onClick={() => handleItemClick(`/project/${project.id}`)}
+                        title={project.name}
+                      >
+                        <span className="project-color" style={{ backgroundColor: project.color }}></span>
+                        <span className="project-name">{project.name}</span>
+                      </button>
+                    );
+                  })}
+                  {orderedFilteredProjects.length === 0 && searchTerm && (
                     <div className="no-projects">No projects found</div>
                   )}
-                  {filteredProjects.length === 0 && !searchTerm && projects.length === 0 && (
+                  {orderedFilteredProjects.length === 0 && !searchTerm && projects.length === 0 && (
                     <div className="no-projects">No projects yet</div>
                   )}
                   {/* Add project button when list is not scrollable */}

@@ -327,8 +327,11 @@ const ProjectTaskCard = ({
     navigate(`/project/${project.id}`);
   };
 
+  // Check if project has overdue deadline
+  const isOverdue = dataUtils.hasOverdueDeadline(events, project.id);
+
   return (
-    <div className="project-task-card" style={{ borderTopColor: project.color }}>
+    <div className={`project-task-card ${isOverdue ? 'project-overdue' : ''}`} style={{ borderTopColor: project.color }}>
       {/* Card header */}
       <div className="card-header">
         <div className="project-card-header">
