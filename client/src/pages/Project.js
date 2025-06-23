@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { apiService } from '../services/api';
 import ProjectFiles from '../components/ProjectFiles';
+import ProjectProgressBars from '../components/ProjectProgressBars';
 import './Project.css';
 import { differenceInDays, isPast, isToday, startOfDay } from 'date-fns';
 
@@ -95,7 +96,11 @@ const Project = () => {
       </div>
 
       <div className="project-bottom-container">
-        <div className="project-actions-container">
+        <div 
+          className="project-actions-container"
+          style={{ '--project-color': project.color }}
+        >
+          <ProjectProgressBars project={project} />
           <button 
             className="btn btn-primary btn-pill learning-session-btn"
             onClick={handleLearningSession}

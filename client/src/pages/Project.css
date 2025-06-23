@@ -5,7 +5,7 @@
   flex-direction: column;
   background-color: var(--background);
   overflow: auto;
-  padding: 4.8em 8.8em; /* Default padding for collapsed state */
+  padding: 2.4em 8.8em 14em 8.8em; /* Default padding for collapsed state */
   transition: padding 0.3s cubic-bezier(0.2, 0, 0, 1);
 }
 
@@ -24,7 +24,7 @@
 }
 
 .project-title {
-  font-size: 2.5rem;
+  font-size: 3em;
   font-weight: 700;
   color: var(--text-primary);
   text-align: left;
@@ -32,7 +32,7 @@
 
 .deadline-text {
   font-size: 1.25rem;
-  font-weight: 500;
+  font-weight: 100;
   color: var(--text-muted);
   white-space: nowrap;
 }
@@ -91,6 +91,32 @@
 /* Remove positioning from the button container itself */
 .project-actions-container {
   position: static;
+  display: flex;
+  align-items: flex-end;
+  gap: var(--spacing-lg);
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 var(--spacing-lg);
+  min-height: 80px;
+}
+
+.learning-session-btn {
+  font-size: 2em;
+  font-weight: 600;
+  padding: 16px 32px;
+  height: auto;
+  min-width: 400px;
+  max-width: 600px;
+  height: 80px;
+  box-shadow: var(--shadow-lg);
+  align-self: flex-end;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
+  background-color: var(--project-color);
+  border-color: var(--project-color);
+  margin-left: 5em;
 }
 
 /* Adjust button position when drawer is expanded */
@@ -98,26 +124,11 @@
   bottom: calc(var(--project-drawer-expanded-height) + var(--spacing-sm));
 }
 
-@media (max-width: 768px) {
-  .project-bottom-container {
-    left: 0;
-    right: 0;
-    align-items: center; /* Center button on mobile */
-  }
-}
-
-.learning-session-btn {
-  font-size: 1.5rem;
-  font-weight: 600;
-  padding: 16px 32px;
-  height: auto;
-  min-width: auto;
-  box-shadow: var(--shadow-lg);
-}
-
 .learning-session-btn:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+  background-color: color-mix(in srgb, var(--project-color) 90%, black);
+  border-color: color-mix(in srgb, var(--project-color) 90%, black);
 }
 
 .learning-session-btn:active {
@@ -156,11 +167,23 @@
     font-size: 2rem;
   }
   
+  .project-bottom-container {
+    left: 0;
+    right: 0;
+    align-items: center;
+  }
+  
+  .project-actions-container {
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: 0 var(--spacing-md);
+    min-height: auto;
+  }
+
   .learning-session-btn {
-    font-size: 1rem;
-    padding: var(--spacing-sm) var(--spacing-lg);
-    min-width: 180px;
-    height: 48px;
+    align-self: center;
+    max-width: 250px; /* Slightly smaller on mobile */
   }
 }
 
