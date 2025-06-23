@@ -209,8 +209,17 @@
 
 .file-progress {
   height: 100%;
-  background-color: var(--primary-color);
   border-radius: 4px;
+}
+
+/* Resources file progress - use project color */
+.file-progress.resource {
+  background-color: var(--project-color);
+}
+
+/* Exams file progress - use lighter project color */
+.file-progress.exam {
+  background-color: color-mix(in srgb, var(--project-color) 70%, white);
 }
 
 .no-files-found {

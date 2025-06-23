@@ -1,0 +1,111 @@
+.study-timeline {
+  position: relative;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 3em 4em;
+  padding: 0 2em;
+}
+
+.timeline-arrow {
+  position: absolute;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background-color: var(--project-color);
+  background-image: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--project-color) 30%, white),
+    color-mix(in srgb, var(--project-color) 40%, white)
+  );
+  z-index: 3;
+}
+
+.timeline-arrow::after {
+  content: '';
+  position: absolute;
+  right: -24px;
+  top: 50%;
+  transform: translateY(-50%) rotate(180deg) translateX(50%);
+  width: 24px;
+  height: 24px;
+  background: color-mix(in srgb, var(--project-color) 40%, white);
+  clip-path: polygon(0 50%, 100% 0, 100% 100%);
+  border-radius: 3px;
+}
+
+.timeline-content {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.timeline-scroll-container {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-behavior: smooth;
+  padding: 0 2em;
+  z-index: 1;
+}
+
+.timeline-scroll-container::-webkit-scrollbar {
+  display: none;
+}
+
+.timeline-dates {
+  display: flex;
+  align-items: flex-end;
+  height: 100%;
+  padding-bottom: 1em;
+  gap: 0.5em;
+}
+
+.date-marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 1.5em;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  position: relative;
+  min-width: 100px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.date-marker::before {
+  content: '';
+  width: 2px;
+  height: 8px;
+  background-color: var(--text-muted);
+  margin-bottom: 0.5em;
+}
+
+.timeline-content::before,
+.timeline-content::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2em;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.timeline-content::before {
+  left: 0;
+  background: linear-gradient(to right, var(--background) 0%, transparent 100%);
+}
+
+.timeline-content::after {
+  right: 0;
+  background: linear-gradient(to left, var(--background) 0%, transparent 100%);
+}

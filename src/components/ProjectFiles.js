@@ -33,7 +33,10 @@ const FileItem = ({ file }) => (
     <div className="file-meta">
       <span className="file-type-tag">{file.type}</span>
       <div className="file-progress-bar">
-        <div className="file-progress" style={{ width: `${file.progress}%` }}></div>
+        <div 
+          className={`file-progress ${file.type.toLowerCase()}`} 
+          style={{ width: `${file.progress}%` }}
+        ></div>
       </div>
     </div>
   </div>
@@ -73,7 +76,10 @@ const ProjectFiles = ({ project }) => {
   }, [filteredFiles]);
 
   return (
-    <div className={`project-files ${isExpanded ? 'expanded' : 'collapsed'}`}>
+    <div 
+      className={`project-files ${isExpanded ? 'expanded' : 'collapsed'}`}
+      style={{ '--project-color': project.color }}
+    >
       <div className="project-files-header">
         <div className="search-bar">
           <FontAwesomeIcon icon={faSearch} className="search-icon" />

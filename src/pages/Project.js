@@ -3,8 +3,9 @@ import { useParams } from 'react-router-dom';
 import { apiService } from '../services/api';
 import ProjectFiles from '../components/ProjectFiles';
 import ProjectProgressBars from '../components/ProjectProgressBars';
+import StudyTimeline from '../components/StudyTimeline';
 import './Project.css';
-import { differenceInDays, isPast, isToday, startOfDay } from 'date-fns';
+import { differenceInDays, isPast, isToday, startOfDay, subDays, addDays } from 'date-fns';
 
 const Project = () => {
   const { projectId } = useParams();
@@ -12,6 +13,123 @@ const Project = () => {
   const [deadlineText, setDeadlineText] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [studySessions, setStudySessions] = useState([]);
+
+  // Enhanced mock data for development
+  const mockStudySessions = [
+    {
+      date: '2024-03-01',
+      topic: 'Project Setup & Requirements Analysis',
+      duration: 120,
+      performance: {
+        comprehension: 85,
+        focus: 90,
+        efficiency: 88
+      },
+      subtopics: [
+        'Project Structure Setup',
+        'Development Environment Configuration',
+        'Requirements Documentation'
+      ],
+      notes: 'Initial project setup completed. Identified key requirements and potential challenges.'
+    },
+    {
+      date: '2024-03-02',
+      topic: 'Database Schema Design',
+      duration: 90,
+      performance: {
+        comprehension: 92,
+        focus: 85,
+        efficiency: 87
+      },
+      subtopics: [
+        'Entity Relationship Diagrams',
+        'Data Models Definition',
+        'Schema Optimization'
+      ],
+      notes: 'Completed initial database schema design. Need to review indexing strategy.'
+    },
+    {
+      date: '2024-03-02',
+      topic: 'API Endpoints Planning',
+      duration: 60,
+      performance: {
+        comprehension: 88,
+        focus: 82,
+        efficiency: 85
+      },
+      subtopics: [
+        'REST API Design',
+        'Endpoint Documentation',
+        'Security Considerations'
+      ],
+      notes: 'Mapped out core API endpoints. Authentication flow needs more detail.'
+    },
+    {
+      date: '2024-03-04',
+      topic: 'Frontend Architecture',
+      duration: 180,
+      performance: {
+        comprehension: 95,
+        focus: 88,
+        efficiency: 92
+      },
+      subtopics: [
+        'Component Structure',
+        'State Management',
+        'Routing Setup'
+      ],
+      notes: 'Established core frontend architecture. Good progress on component hierarchy.'
+    },
+    {
+      date: '2024-03-06',
+      topic: 'User Authentication Implementation',
+      duration: 150,
+      performance: {
+        comprehension: 87,
+        focus: 93,
+        efficiency: 89
+      },
+      subtopics: [
+        'JWT Implementation',
+        'Auth Middleware',
+        'User Sessions'
+      ],
+      notes: 'Implemented basic authentication flow. Need to add password reset functionality.'
+    },
+    {
+      date: '2024-03-08',
+      topic: 'Data Models & Validation',
+      duration: 120,
+      performance: {
+        comprehension: 91,
+        focus: 87,
+        efficiency: 90
+      },
+      subtopics: [
+        'Model Validation Rules',
+        'Error Handling',
+        'Data Sanitization'
+      ],
+      notes: 'Completed core data models. Added comprehensive validation rules.'
+    },
+    {
+      date: '2024-03-10',
+      topic: 'UI Components Development',
+      duration: 240,
+      performance: {
+        comprehension: 94,
+        focus: 91,
+        efficiency: 93
+      },
+      subtopics: [
+        'Form Components',
+        'Data Display Components',
+        'Navigation Elements'
+      ],
+      notes: 'Built core UI component library. Good progress on accessibility features.'
+    }
+  ];
 
   useEffect(() => {
     const loadData = async () => {
@@ -36,6 +154,10 @@ const Project = () => {
             setDeadlineText(daysRemaining === 1 ? 'Deadline in 1 day' : `Deadline in ${daysRemaining} days`);
           }
         }
+
+        // TODO: Replace with actual API call when endpoint is ready
+        // const studySessionsData = await apiService.getStudySessions(projectId);
+        setStudySessions(mockStudySessions);
         
         setError(null);
       } catch (err) {
@@ -52,6 +174,15 @@ const Project = () => {
   const handleLearningSession = () => {
     // TODO: Implement learning session functionality
     console.log('Starting learning session for project:', project?.name);
+  };
+
+  // Calculate timeline date range
+  const getTimelineRange = () => {
+    const today = new Date();
+    return {
+      startDate: subDays(today, 14).toISOString(), // Show last 2 weeks
+      endDate: addDays(today, 14).toISOString()    // Show next 2 weeks
+    };
   };
 
   if (loading) {
@@ -84,6 +215,8 @@ const Project = () => {
     );
   }
 
+  const { startDate, endDate } = getTimelineRange();
+
   return (
     <div className="project-page">
       <div className="project-header">
@@ -92,14 +225,19 @@ const Project = () => {
       </div>
       
       <div className="project-content">
-        {/* Project content will be mostly empty, letting the drawer take space */}
+        <StudyTimeline 
+          studySessions={studySessions}
+          startDate={startDate}
+          endDate={endDate}
+          project={project}
+        />
       </div>
 
-      <div className="project-bottom-container">
-        <div 
-          className="project-actions-container"
-          style={{ '--project-color': project.color }}
-        >
+      <div 
+        className="project-bottom-container"
+        style={{ '--project-color': project.color }}
+      >
+        <div className="project-actions-container">
           <ProjectProgressBars project={project} />
           <button 
             className="btn btn-primary btn-pill learning-session-btn"

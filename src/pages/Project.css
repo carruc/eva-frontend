@@ -100,8 +100,8 @@
   min-height: 80px;
 }
 
-.learning-session-btn {
-  font-size: 2em;
+.project-actions-container .btn.btn-primary.learning-session-btn {
+  font-size: 2.5em;
   font-weight: 600;
   padding: 16px 32px;
   height: auto;
@@ -114,26 +114,29 @@
   overflow: hidden;
   text-overflow: ellipsis;
   flex-shrink: 0;
-  background-color: var(--project-color);
-  border-color: var(--project-color);
+  background-color: var(--project-color) !important;
+  border-color: var(--project-color) !important;
   margin-left: 5em;
+  color: white;
+}
+
+.project-actions-container .btn.btn-primary.learning-session-btn:hover {
+  transform: translateY(-4px);
+  scale: 1.05;
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+  background-color: color-mix(in srgb, var(--project-color) 70%, white) !important;
+  border-color: color-mix(in srgb, var(--project-color) 70%, white) !important;
+  color: var(--text-primary);
+}
+
+.project-actions-container .btn.btn-primary.learning-session-btn:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-md);
 }
 
 /* Adjust button position when drawer is expanded */
 .project-files.expanded ~ .project-actions-container {
   bottom: calc(var(--project-drawer-expanded-height) + var(--spacing-sm));
-}
-
-.learning-session-btn:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
-  background-color: color-mix(in srgb, var(--project-color) 90%, black);
-  border-color: color-mix(in srgb, var(--project-color) 90%, black);
-}
-
-.learning-session-btn:active {
-  transform: translateY(0);
-  box-shadow: var(--shadow-md);
 }
 
 /* Loading and error states */
