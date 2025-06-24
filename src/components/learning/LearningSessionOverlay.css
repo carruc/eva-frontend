@@ -1,0 +1,101 @@
+/* Learning Session Overlay - Container for theme toggle */
+.learning-session-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1001;
+  pointer-events: none; /* Allow clicks to pass through the container */
+  display: flex;
+  justify-content: flex-end;
+  padding: 1.5rem;
+}
+
+/* Enable pointer events for individual buttons */
+.learning-session-overlay > * {
+  pointer-events: auto;
+}
+
+/* Button container for vertical stacking */
+.learning-session-overlay-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: center; /* Ensure perfect alignment */
+}
+
+/* Menu button styling - positioned below theme toggle */
+.menu-button {
+  max-width: 32px;
+  max-height: 32px;
+  width: 2rem;
+  height: 2rem;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-lg);
+  opacity: 0.3;
+  padding: 0;
+  margin: 0; /* Reset any default margins */
+}
+
+.menu-button:hover {
+  opacity: 1;
+  background-color: var(--surface-hover);
+  border-color: var(--text-muted);
+  color: var(--text-primary);
+}
+
+.menu-button svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  opacity: 0.8;
+}
+
+/* Theme toggle button styling - positioned on the right */
+.learning-session-overlay-theme-btn {
+  opacity: 0.3;
+  transition: opacity 0.3s ease;
+  box-shadow: var(--shadow-lg);
+}
+
+.learning-session-overlay-theme-btn:hover {
+  opacity: 1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .learning-session-overlay {
+    padding: 1rem;
+  }
+  
+  .learning-session-overlay-buttons {
+    gap: 0.5rem;
+  }
+  
+  .menu-button,
+  .learning-session-overlay-theme-btn {
+    opacity: 0.35;
+  }
+}
+
+@media (max-width: 480px) {
+  .learning-session-overlay {
+    padding: 0.75rem;
+  }
+  
+  .learning-session-overlay-buttons {
+    gap: 0.375rem;
+  }
+  
+  .menu-button,
+  .learning-session-overlay-theme-btn {
+    opacity: 0.4;
+  }
+} 

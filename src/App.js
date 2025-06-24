@@ -11,6 +11,7 @@ import { apiService } from './services/api';
 import './App.css';
 import { PROJECTS_LIMIT } from './components/HeatmapCalendar';
 import { dataUtils } from './services/api';
+import { useLearningSession } from './contexts/LearningSessionContext';
 
 function App() {
   // State management for all entities - Implements requirements R1-R16
@@ -33,6 +34,8 @@ function App() {
   const [timeScale, setTimeScale] = useState(1);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [showEventTitles, setShowEventTitles] = useState(true);
+
+  const { isSessionActive, previousSidebarState } = useLearningSession();
 
   // Load initial data
   useEffect(() => {
@@ -401,17 +404,18 @@ function App() {
   return (
     <Router>
       <div className="app">
-        {/* Sidebar */}
-        <Sidebar 
-          isCollapsed={sidebarCollapsed}
-          onToggle={handleToggleSidebar}
-          projects={projects}
-          events={events}
-          onNewProject={() => setShowProjectModal(true)}
-        />
+        {/* Only show Sidebar when no learning session is active */}
+        {!isSessionActive && (
+          <Sidebar 
+            isCollapsed={sidebarCollapsed}
+            onToggle={handleToggleSidebar}
+            projects={projects}
+            events={events}
+            onNewProject={() => setShowProjectModal(true)}
+          />
+        )}
 
-        {/* Main application content */}
-        <div className={`app-layout ${sidebarCollapsed ? 'sidebar-collapsed' : 'sidebar-expanded'}`}>
+        <div className={`app-layout ${!isSessionActive && !sidebarCollapsed ? 'sidebar-expanded' : 'sidebar-collapsed'}`}>
           {/* Error display */}
           {error && (
             <div className="error-banner">
@@ -466,11 +470,13 @@ function App() {
             </Routes>
           </main>
 
-          {/* Page overlay with sidebar expand and theme toggle buttons */}
-          <PageOverlay 
-            sidebarCollapsed={sidebarCollapsed}
-            onToggleSidebar={handleToggleSidebar}
-          />
+          {/* Only show PageOverlay when no learning session is active */}
+          {!isSessionActive && (
+            <PageOverlay 
+              sidebarCollapsed={sidebarCollapsed}
+              onToggleSidebar={handleToggleSidebar}
+            />
+          )}
         </div>
 
         {/* Modals */}
