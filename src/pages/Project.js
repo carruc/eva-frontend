@@ -1,20 +1,42 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { apiService } from '../services/api';
 import ProjectFiles from '../components/ProjectFiles';
 import ProjectProgressBars from '../components/ProjectProgressBars';
 import StudyTimeline from '../components/StudyTimeline';
+// Keep import but comment out for now
+// import Events from '../components/Events';
 import './Project.css';
 import { differenceInDays, isPast, isToday, startOfDay, subDays, addDays } from 'date-fns';
 
+// Utility function to convert hex to RGB
+const hexToRgb = (hex) => {
+  // Remove # if present
+  hex = hex.replace('#', '');
+  
+  // Convert 3-digit hex to 6-digits
+  if (hex.length === 3) {
+    hex = hex.split('').map(char => char + char).join('');
+  }
+  
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+  
+  return `${r}, ${g}, ${b}`;
+};
+
 const Project = () => {
   const { projectId } = useParams();
+  const headerRef = useRef(null);
   const [project, setProject] = useState(null);
   const [deadlineText, setDeadlineText] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [studySessions, setStudySessions] = useState([]);
   const [isFilesExpanded, setIsFilesExpanded] = useState(false);
+  // Keep state but comment out for now
+  // const [showEvents, setShowEvents] = useState(false);
 
   // Enhanced mock data for development
   const mockStudySessions = [
@@ -132,6 +154,20 @@ const Project = () => {
     }
   ];
 
+  // Add effect to update header height CSS variable
+  useEffect(() => {
+    const updateHeaderHeight = () => {
+      if (headerRef.current) {
+        const height = headerRef.current.offsetHeight;
+        document.documentElement.style.setProperty('--header-height', `${height}px`);
+      }
+    };
+
+    updateHeaderHeight();
+    window.addEventListener('resize', updateHeaderHeight);
+    return () => window.removeEventListener('resize', updateHeaderHeight);
+  }, []);
+
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -171,6 +207,20 @@ const Project = () => {
     
     loadData();
   }, [projectId]);
+
+  // Comment out events visibility effect
+  /*
+  useEffect(() => {
+    if (!isFilesExpanded) {
+      const timer = setTimeout(() => {
+        setShowEvents(false);
+      }, 300);
+      return () => clearTimeout(timer);
+    } else {
+      setShowEvents(true);
+    }
+  }, [isFilesExpanded]);
+  */
 
   const handleLearningSession = () => {
     // TODO: Implement learning session functionality
@@ -220,7 +270,7 @@ const Project = () => {
 
   return (
     <div className="project-page">
-      <div className="project-header">
+      <div className="project-header" ref={headerRef}>
         <h1 className="project-title">{project.name}</h1>
         {deadlineText && <span className="deadline-text">{deadlineText}</span>}
       </div>
@@ -236,8 +286,13 @@ const Project = () => {
 
       <div 
         className="project-bottom-container"
-        style={{ '--project-color': project.color }}
+        style={{ 
+          '--project-color': project.color,
+          '--accent-color-rgb': hexToRgb(project.color)
+        }}
       >
+        {/* Comment out Events component for now */}
+        {/* {isFilesExpanded && <Events />} */}
         <div className="project-actions-container">
           <ProjectProgressBars project={project} />
           <button 
