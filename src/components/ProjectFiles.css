@@ -17,6 +17,17 @@
   width: 100%; /* Ensure it fills its container */
 }
 
+/* Add a class to the main content that will be blurred */
+.projects-content {
+  transition: filter 0.3s ease-in-out;
+}
+
+/* When files panel is expanded, blur the main content */
+.projects-content.blur {
+  filter: blur(4px);
+  pointer-events: none; /* Prevent interaction with blurred content */
+}
+
 .project-files.collapsed {
   height: var(--project-drawer-collapsed-height);
 }

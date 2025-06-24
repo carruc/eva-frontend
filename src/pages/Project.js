@@ -14,6 +14,7 @@ const Project = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [studySessions, setStudySessions] = useState([]);
+  const [isFilesExpanded, setIsFilesExpanded] = useState(false);
 
   // Enhanced mock data for development
   const mockStudySessions = [
@@ -224,7 +225,7 @@ const Project = () => {
         {deadlineText && <span className="deadline-text">{deadlineText}</span>}
       </div>
       
-      <div className="project-content">
+      <div className={`project-content ${isFilesExpanded ? 'blur' : ''}`}>
         <StudyTimeline 
           studySessions={studySessions}
           startDate={startDate}
@@ -246,7 +247,10 @@ const Project = () => {
             Start Learning Session
           </button>
         </div>
-        <ProjectFiles project={project} />
+        <ProjectFiles 
+          project={project} 
+          onExpandChange={setIsFilesExpanded}
+        />
       </div>
     </div>
   );

@@ -1,15 +1,19 @@
 .study-timeline {
   position: relative;
-  height: 120px;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 3em 4em;
   padding: 0 2em;
+  --timeline-vertical-height: 240px; /* Variable for vertical measurements */
+  --min-line-height: 40px;
+  --max-line-height: 240px;
 }
 
 .timeline-arrow {
   position: absolute;
+  transform: translateY(-22px);
   width: 100%;
   height: 6px;
   border-radius: 3px;
@@ -40,6 +44,7 @@
   inset: 0;
   z-index: 1;
   overflow: hidden;
+  transform: translateY(-100px);
 }
 
 .timeline-scroll-container {
@@ -62,10 +67,10 @@
 
 .timeline-dates {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   height: 100%;
-  padding-bottom: 1em;
-  gap: 0.5em;
+  gap: 2em;
+  padding: 0;
 }
 
 .date-marker {
@@ -79,22 +84,64 @@
   min-width: 100px;
   cursor: pointer;
   user-select: none;
+  transform: translateY(calc(var(--timeline-vertical-height) / 2 - 22px));
 }
 
-.date-marker::before {
+/* Move pseudo-elements to a class so we can conditionally apply them */
+.date-marker.has-session::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: calc(-1 * var(--session-line-height, var(--min-line-height)));
+  width: 4px;
+  height: var(--session-line-height, var(--min-line-height));
+  background-image: linear-gradient(to bottom, 
+    var(--text-muted) 50%,
+    transparent 50%
+  );
+  background-size: 2px 8px;
+  background-repeat: repeat-y;
+  opacity: 0.5;
+  transform: translateX(-50%);
+}
+
+.date-marker.has-session::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: calc(-1 * var(--session-line-height, var(--min-line-height)));
+  width: 8px;
+  height: 8px;
+  background-color: var(--text-muted);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 1;
+}
+
+.date-marker > span {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.date-marker > span::before {
   content: '';
   width: 2px;
   height: 8px;
   background-color: var(--text-muted);
-  margin-bottom: 0.5em;
+  border-radius: 4px;
 }
 
 .timeline-content::before,
 .timeline-content::after {
   content: '';
   position: absolute;
-  top: 0;
-  bottom: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  max-height: 500px;
+  height: 100%;
   width: 2em;
   z-index: 2;
   pointer-events: none;
@@ -108,4 +155,72 @@
 .timeline-content::after {
   right: 0;
   background: linear-gradient(to left, var(--background) 0%, transparent 100%);
+}
+
+/* New styles for scores and topics */
+.date-scores {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25em;
+  position: absolute;
+  top: 100%;
+  margin-top: 0.5em;
+}
+
+.date-score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.125em;
+}
+
+.date-score-label {
+  font-size: 0.625rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.date-score-value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.date-topics {
+  position: absolute;
+  top: calc(-1 * var(--session-line-height, var(--min-line-height)));
+  left: 50%;
+  transform: translate(-50%, calc(-100% - 30px));
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  text-align: center;
+  width: 150px;
+  min-height: min-content;
+  line-height: 1.2;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  padding: 0 0.5em;
+}
+
+.date-time-studied {
+  position: absolute;
+  top: calc(-1 * var(--session-line-height, var(--min-line-height)) - 16px);
+  left: 50%;
+  transform: translate(-50%, -10px);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Add ellipsis for topics that are too long */
+.date-topics-item {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }

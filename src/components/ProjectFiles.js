@@ -42,7 +42,7 @@ const FileItem = ({ file }) => (
   </div>
 );
 
-const ProjectFiles = ({ project }) => {
+const ProjectFiles = ({ project, onExpandChange }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isExpanded, setIsExpanded] = useState(false);
   // In a real app, these files would come from the project prop
@@ -53,7 +53,9 @@ const ProjectFiles = ({ project }) => {
   };
 
   const toggleExpanded = () => {
-    setIsExpanded(!isExpanded);
+    const newExpandedState = !isExpanded;
+    setIsExpanded(newExpandedState);
+    onExpandChange?.(newExpandedState);
   };
 
   const filteredFiles = useMemo(() => {
