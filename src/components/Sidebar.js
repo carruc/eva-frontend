@@ -11,6 +11,7 @@ import {
   faUser,
   faPlus
 } from '@fortawesome/free-solid-svg-icons';
+import { useTheme } from '../contexts/ThemeContext';
 import { dataUtils } from '../services/api';
 import './Sidebar.css';
 
@@ -21,6 +22,9 @@ const Sidebar = ({ isCollapsed, onToggle, projects = [], events = [], onNewProje
   const projectsListRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const { theme } = useTheme();
+
+  console.log('Current theme:', theme);
 
   const navigationItems = [
     { 
@@ -219,7 +223,11 @@ const Sidebar = ({ isCollapsed, onToggle, projects = [], events = [], onNewProje
         {/* Sidebar Header */}
         <div className="sidebar-header">
           <div className="sidebar-brand">
-            <span className="brand-text">EVA</span>
+            <img 
+              src={theme === 'dark' ? `${process.env.PUBLIC_URL}/logo_white.png` : `${process.env.PUBLIC_URL}/logo_black.png`}
+              alt="EVA Logo"
+              className="brand-logo"
+            />
           </div>
           <button 
             className="sidebar-toggle"

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '../contexts/ThemeContext';
-import { Dialog, DialogContent, Button } from '@mui/material';
 import InitialPrompts from '../components/learning/InitialPrompts';
 import AssessmentPrompts from '../components/learning/AssessmentPrompts';
 import SessionTimer from '../components/learning/SessionTimer';
@@ -19,9 +18,8 @@ import '../styles/LearningSession.css';
 
 const LearningSession = ({ projectId, onClose }) => {
   const { isDarkMode } = useTheme();
-  const [menuOpen, setMenuOpen] = useState(false);
   const [showTimer, setShowTimer] = useState(true);
-  const [currentStage, setCurrentStage] = useState('initial'); // initial, study, assessment, testing
+  const [currentStage, setCurrentStage] = useState('initial');
   const [sessionData, setSessionData] = useState({
     topic: '',
     duration: '',
@@ -36,20 +34,19 @@ const LearningSession = ({ projectId, onClose }) => {
   const [questions, setQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
-  // Menu dialog handlers
-  const handleMenuOpen = () => setMenuOpen(true);
-  const handleMenuClose = () => setMenuOpen(false);
-
-  const handleQuitSession = () => {
-    if (window.confirm('Are you sure you want to quit? All progress will be lost.')) {
-      onClose();
-    }
+  const handleToggleTimer = () => {
+    setShowTimer(!showTimer);
   };
 
   const handleEndEarly = () => {
     if (window.confirm('Do you want to end the session early and proceed to assessment?')) {
       setCurrentStage('assessment');
-      handleMenuClose();
+    }
+  };
+
+  const handleQuitSession = () => {
+    if (window.confirm('Are you sure you want to quit? All progress will be lost.')) {
+      onClose();
     }
   };
 
@@ -65,13 +62,11 @@ const LearningSession = ({ projectId, onClose }) => {
   const handleAssessmentComplete = (data) => {
     setAssessmentData(data);
     setCurrentStage('testing');
-    // Here you would fetch questions from the server
     fetchQuestions();
   };
 
   const fetchQuestions = async () => {
     try {
-      // Replace with actual API call
       const response = await fetch(`/api/projects/${projectId}/questions`);
       const data = await response.json();
       setQuestions(data);
@@ -82,12 +77,10 @@ const LearningSession = ({ projectId, onClose }) => {
   };
 
   const handleAnswer = (answer) => {
-    // Save answer and move to next question
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
       setCurrentQuestion(questions[currentQuestionIndex + 1]);
     } else {
-      // Session complete
       onClose();
     }
   };
@@ -123,9 +116,13 @@ const LearningSession = ({ projectId, onClose }) => {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <LearningSessionOverlay onMenuOpen={handleMenuOpen} />
+      <LearningSessionOverlay 
+        onToggleTimer={handleToggleTimer}
+        onEndEarly={handleEndEarly}
+        onQuit={handleQuitSession}
+        showTimer={showTimer}
+      />
 
-      {/* Timer display */}
       {showTimer && currentStage === 'study' && (
         <SessionTimer 
           duration={sessionData.duration} 
@@ -133,7 +130,6 @@ const LearningSession = ({ projectId, onClose }) => {
         />
       )}
 
-      {/* Main content area */}
       <AnimatePresence mode="wait">
         <motion.div 
           key={currentStage}
@@ -165,42 +161,6 @@ const LearningSession = ({ projectId, onClose }) => {
           )}
         </motion.div>
       </AnimatePresence>
-
-      {/* Menu Dialog */}
-      <Dialog 
-        open={menuOpen} 
-        onClose={handleMenuClose}
-        PaperProps={{
-          style: {
-            backgroundColor: isDarkMode ? '#1a1a1a' : '#ffffff',
-            color: isDarkMode ? '#ffffff' : '#000000',
-          }
-        }}
-      >
-        <DialogContent>
-          <Button 
-            fullWidth 
-            onClick={() => setShowTimer(!showTimer)}
-            style={{ marginBottom: 8 }}
-          >
-            {showTimer ? 'Hide Timer' : 'Show Timer'}
-          </Button>
-          <Button 
-            fullWidth 
-            onClick={handleEndEarly}
-            style={{ marginBottom: 8, color: 'text.secondary' }}
-          >
-            End Session Early
-          </Button>
-          <Button 
-            fullWidth 
-            onClick={handleQuitSession}
-            color="error"
-          >
-            Quit Session
-          </Button>
-        </DialogContent>
-      </Dialog>
     </motion.div>
   );
 };

@@ -30,7 +30,7 @@ const hexToRgb = (hex) => {
 
 const Project = () => {
   const { projectId } = useParams();
-  const { startSession } = useLearningSession();
+  const { startSession, endSession } = useLearningSession();
   const headerRef = useRef(null);
   const [project, setProject] = useState(null);
   const [deadlineText, setDeadlineText] = useState('');
@@ -232,6 +232,9 @@ const Project = () => {
   };
 
   const handleCloseLearningSession = () => {
+    // First end the session in the context
+    endSession();
+    // Then update local state
     setShowLearningSession(false);
   };
 
@@ -277,54 +280,57 @@ const Project = () => {
   const { startDate, endDate } = getTimelineRange();
 
   return (
-    <div className="project-page">
-      {showLearningSession ? (
-        <LearningSession 
-          projectId={projectId} 
-          onClose={handleCloseLearningSession}
-        />
-      ) : (
-        <>
-          <div className="project-header" ref={headerRef}>
-            <h1 className="project-title">{project.name}</h1>
-            {deadlineText && <span className="deadline-text">{deadlineText}</span>}
-          </div>
-          
-          <div className={`project-content ${isFilesExpanded ? 'blur' : ''}`}>
-            <StudyTimeline 
-              studySessions={studySessions}
-              startDate={startDate}
-              endDate={endDate}
-              project={project}
-            />
-          </div>
+    <>
+      <div className="project-page">
+        <div className="project-header" ref={headerRef}>
+          <h1 className="project-title">{project.name}</h1>
+          {deadlineText && <span className="deadline-text">{deadlineText}</span>}
+        </div>
+        
+        <div className={`project-content ${isFilesExpanded ? 'blur' : ''}`}>
+          <StudyTimeline 
+            studySessions={studySessions}
+            startDate={startDate}
+            endDate={endDate}
+            project={project}
+          />
+        </div>
 
-          <div 
-            className="project-bottom-container"
-            style={{ 
-              '--project-color': project.color,
-              '--accent-color-rgb': hexToRgb(project.color)
-            }}
-          >
-            {/* Comment out Events component for now */}
-            {/* {isFilesExpanded && <Events />} */}
-            <div className="project-actions-container">
-              <ProjectProgressBars project={project} />
-              <button 
-                className="btn btn-primary btn-pill learning-session-btn"
-                onClick={handleLearningSession}
-              >
-                Start Learning Session
-              </button>
-            </div>
-            <ProjectFiles 
-              project={project} 
-              onExpandChange={setIsFilesExpanded}
-            />
+        <div 
+          className="project-bottom-container"
+          style={{ 
+            '--project-color': project.color,
+            '--accent-color-rgb': hexToRgb(project.color)
+          }}
+        >
+          {/* Comment out Events component for now */}
+          {/* {isFilesExpanded && <Events />} */}
+          <div className="project-actions-container">
+            <ProjectProgressBars project={project} />
+            <button 
+              className="btn btn-primary btn-pill learning-session-btn"
+              onClick={handleLearningSession}
+            >
+              Start Learning Session
+            </button>
           </div>
-        </>
+          <ProjectFiles 
+            project={project} 
+            onExpandChange={setIsFilesExpanded}
+          />
+        </div>
+      </div>
+
+      {/* Learning Session Modal */}
+      {showLearningSession && (
+        <div className="learning-session-modal">
+          <LearningSession 
+            projectId={projectId} 
+            onClose={handleCloseLearningSession}
+          />
+        </div>
       )}
-    </div>
+    </>
   );
 };
 

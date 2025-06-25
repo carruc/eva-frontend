@@ -404,18 +404,17 @@ function App() {
   return (
     <Router>
       <div className="app">
-        {/* Only show Sidebar when no learning session is active */}
-        {!isSessionActive && (
-          <Sidebar 
-            isCollapsed={sidebarCollapsed}
-            onToggle={handleToggleSidebar}
-            projects={projects}
-            events={events}
-            onNewProject={() => setShowProjectModal(true)}
-          />
-        )}
+        {/* Always render Sidebar but control visibility with CSS */}
+        <Sidebar 
+          isCollapsed={sidebarCollapsed}
+          onToggle={handleToggleSidebar}
+          projects={projects}
+          events={events}
+          onNewProject={() => setShowProjectModal(true)}
+          style={{ display: isSessionActive ? 'none' : 'block' }}
+        />
 
-        <div className={`app-layout ${!isSessionActive && !sidebarCollapsed ? 'sidebar-expanded' : 'sidebar-collapsed'}`}>
+        <div className={`app-layout ${!sidebarCollapsed ? 'sidebar-expanded' : 'sidebar-collapsed'}`}>
           {/* Error display */}
           {error && (
             <div className="error-banner">
@@ -431,52 +430,42 @@ function App() {
 
           <main className="app-main">
             <Routes>
-              <Route 
-                path="/" 
-                element={<Homepage />} 
-              />
-              <Route 
-                path="/planning" 
-                element={
-                  <Planning
-                    projects={projects}
-                    tasks={tasks}
-                    events={events}
-                    timeScale={timeScale}
-                    currentDate={currentDate}
-                    onTimeScaleChange={setTimeScale}
-                    onCurrentDateChange={setCurrentDate}
-                    onProjectUpdate={handleUpdateProject}
-                    onProjectDelete={handleDeleteProject}
-                    onProjectEdit={handleEditProject}
-                    onEventEdit={handleEditEvent}
-                    onEventDelete={handleDeleteEvent}
-                    onNewProject={() => setShowProjectModal(true)}
-                    onNewEvent={handleCreateEvent}
-                    showEventTitles={showEventTitles}
-                    onToggleEventTitles={handleToggleEventTitles}
-                    sidebarCollapsed={sidebarCollapsed}
-                    onTaskCreate={handleCreateTask}
-                    onTaskUpdate={handleUpdateTask}
-                    onTaskDelete={handleDeleteTask}
-                    onTaskToggle={handleToggleTaskComplete}
-                  />
-                } 
-              />
-              <Route 
-                path="/project/:projectId" 
-                element={<Project />} 
-              />
+              <Route path="/" element={<Homepage />} />
+              <Route path="/planning" element={
+                <Planning
+                  projects={projects}
+                  tasks={tasks}
+                  events={events}
+                  timeScale={timeScale}
+                  currentDate={currentDate}
+                  onTimeScaleChange={setTimeScale}
+                  onCurrentDateChange={setCurrentDate}
+                  onProjectUpdate={handleUpdateProject}
+                  onProjectDelete={handleDeleteProject}
+                  onProjectEdit={handleEditProject}
+                  onEventEdit={handleEditEvent}
+                  onEventDelete={handleDeleteEvent}
+                  onNewProject={() => setShowProjectModal(true)}
+                  onNewEvent={handleCreateEvent}
+                  showEventTitles={showEventTitles}
+                  onToggleEventTitles={handleToggleEventTitles}
+                  sidebarCollapsed={sidebarCollapsed}
+                  onTaskCreate={handleCreateTask}
+                  onTaskUpdate={handleUpdateTask}
+                  onTaskDelete={handleDeleteTask}
+                  onTaskToggle={handleToggleTaskComplete}
+                />
+              } />
+              <Route path="/project/:projectId" element={<Project />} />
             </Routes>
           </main>
 
-          {/* Only show PageOverlay when no learning session is active */}
-          {!isSessionActive && (
-            <PageOverlay 
-              sidebarCollapsed={sidebarCollapsed}
-              onToggleSidebar={handleToggleSidebar}
-            />
-          )}
+          {/* Always render PageOverlay but control visibility with CSS */}
+          <PageOverlay 
+            sidebarCollapsed={sidebarCollapsed}
+            onToggleSidebar={handleToggleSidebar}
+            style={{ display: isSessionActive ? 'none' : 'block' }}
+          />
         </div>
 
         {/* Modals */}

@@ -39,14 +39,13 @@
 .sidebar-brand {
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
-  font-weight: 700;
-  font-size: 1.25rem;
+  padding: var(--spacing-md);
 }
 
-.brand-icon {
-  font-size: 1.5rem;
-  flex-shrink: 0;
+.brand-logo {
+  height: 24px;
+  width: auto;
+  object-fit: contain;
 }
 
 .brand-text {

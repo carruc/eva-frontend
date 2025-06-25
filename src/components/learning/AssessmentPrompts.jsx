@@ -1,10 +1,68 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Slider, Typography, Button } from '@mui/material';
+import { Typography } from '@mui/material';
 
 const generateRandomPrime = () => {
   const primes = [7, 11, 13, 17, 19];
   return primes[Math.floor(Math.random() * primes.length)];
+};
+
+const CustomSlider = ({ value, onChange, min, max }) => {
+  const sliderRef = useRef(null);
+  const [isDragging, setIsDragging] = useState(false);
+
+  const calculateValue = (clientX) => {
+    const rect = sliderRef.current.getBoundingClientRect();
+    const percentage = (clientX - rect.left) / rect.width;
+    const newValue = Math.round(min + percentage * (max - min));
+    return Math.min(Math.max(newValue, min), max);
+  };
+
+  const handleMouseDown = (e) => {
+    setIsDragging(true);
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    // Update value immediately on click
+    onChange(calculateValue(e.clientX));
+  };
+
+  const handleMouseMove = (e) => {
+    if (isDragging) {
+      onChange(calculateValue(e.clientX));
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+    document.removeEventListener('mousemove', handleMouseMove);
+    document.removeEventListener('mouseup', handleMouseUp);
+  };
+
+  const percentage = ((value - min) / (max - min)) * 100;
+
+  return (
+    <div 
+      className="custom-slider-container"
+      ref={sliderRef}
+      onMouseDown={handleMouseDown}
+      style={{ cursor: isDragging ? 'grabbing' : 'pointer' }}
+    >
+      <div 
+        className="custom-slider"
+        style={{
+          '--slider-percentage': `${percentage}%`,
+        }}
+      >
+        <div 
+          className="custom-slider-thumb"
+          style={{
+            left: `${percentage}%`,
+            cursor: isDragging ? 'grabbing' : 'grab'
+          }}
+        />
+      </div>
+    </div>
+  );
 };
 
 const prompts = [
@@ -75,28 +133,23 @@ const AssessmentPrompts = ({ onComplete }) => {
         </motion.h2>
 
         <div className="slider-container">
-          <Slider
+          <CustomSlider
             value={answers[currentPrompt.key] || 1}
-            onChange={(_, value) => handleSliderChange(value)}
+            onChange={(value) => handleSliderChange(value)}
             min={1}
             max={currentMaxValue}
-            step={1}
-            marks
-            valueLabelDisplay="auto"
           />
-          <Typography className="slider-value" variant="body1">
+          <div className="slider-value">
             {answers[currentPrompt.key] || 1} / {currentMaxValue}
-          </Typography>
+          </div>
         </div>
 
-        <Button
-          variant="contained"
-          className="prompt-button"
+        <button
+          className="btn btn-primary btn-pill prompt-button"
           onClick={handleNext}
-          style={{ marginTop: '32px' }}
         >
           {currentPrompt.isLast ? 'Start Test' : 'Next'}
-        </Button>
+        </button>
       </motion.div>
     </AnimatePresence>
   );

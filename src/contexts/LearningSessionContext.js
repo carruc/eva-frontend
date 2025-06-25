@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useCallback } from 'react';
 
 const LearningSessionContext = createContext();
 
@@ -14,14 +14,17 @@ export const LearningSessionProvider = ({ children }) => {
   const [isSessionActive, setIsSessionActive] = useState(false);
   const [previousSidebarState, setPreviousSidebarState] = useState(false);
 
-  const startSession = (currentSidebarState) => {
+  const startSession = useCallback((currentSidebarState) => {
     setPreviousSidebarState(currentSidebarState);
     setIsSessionActive(true);
-  };
+  }, []);
 
-  const endSession = () => {
+  const endSession = useCallback(() => {
+    // Ensure state updates happen in the correct order
     setIsSessionActive(false);
-  };
+    // Reset previous sidebar state
+    setPreviousSidebarState(false);
+  }, []);
 
   const value = {
     isSessionActive,

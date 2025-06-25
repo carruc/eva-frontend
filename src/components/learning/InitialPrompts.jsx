@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { TextField, Button } from '@mui/material';
+import { TextField } from '@mui/material';
 
 const prompts = [
   {
@@ -72,20 +72,22 @@ const InitialPrompts = ({ onComplete }) => {
           value={answers[currentPrompt.key]}
           onChange={handleInputChange}
           autoFocus
+          multiline
+          minRows={1}
+          maxRows={32}
           InputProps={{
             className: 'prompt-input',
             style: { color: 'inherit' }
           }}
         />
 
-        <Button
-          variant="contained"
-          className="prompt-button"
+        <button
+          className="btn btn-primary btn-pill prompt-button"
           onClick={handleNext}
           disabled={!answers[currentPrompt.key]}
         >
           {currentPrompt.isLast ? 'Begin' : 'Next'}
-        </Button>
+        </button>
       </motion.div>
     </AnimatePresence>
   );
